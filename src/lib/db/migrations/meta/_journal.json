@@ -8,6 +8,27 @@
       "when": 1738453388054,
       "tag": "0000_daily_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1738514519053,
+      "tag": "0001_medical_deadpool",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1738518607650,
+      "tag": "0002_noisy_metal_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1738524941457,
+      "tag": "0003_aspiring_lightspeed",
+      "breakpoints": true
     }
   ]
 }
