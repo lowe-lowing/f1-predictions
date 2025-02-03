@@ -58,7 +58,7 @@ async function getAndAddDriver(name: string) {
             image: result[0].image,
             team: result[0].teams.length > 0 ? result[0].teams[0].team.name : null
         })
-        // const fs = require('fs');
+        // const fs = require('fs');qwe
         // fs.writeFileSync('drivers2025.json', JSON.stringify(result, null, 2));
     } catch (error) {
         console.error(error);
