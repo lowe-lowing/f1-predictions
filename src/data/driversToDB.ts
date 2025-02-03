@@ -1,4 +1,5 @@
 import { createDriver } from "@/lib/api/drivers/mutations";
+import { env } from "@/lib/env.mjs";
 import axios from "axios";
 
 // number
@@ -42,7 +43,7 @@ async function getAndAddDriver(name: string) {
     const options = {
         method: 'GET',
         headers: {
-            'x-rapidapi-key': '0991577742msha5c689592750d94p17e1e3jsn547957d72d9e',
+            'x-rapidapi-key': env.RAPIDAPI_KEY,
             'x-rapidapi-host': 'api-formula-1.p.rapidapi.com'
         }
     };
@@ -69,7 +70,7 @@ async function getDriverAndLog(name: string) {
     const options = {
         method: 'GET',
         headers: {
-            'x-rapidapi-key': '0991577742msha5c689592750d94p17e1e3jsn547957d72d9e',
+            'x-rapidapi-key': env.RAPIDAPI_KEY,
             'x-rapidapi-host': 'api-formula-1.p.rapidapi.com'
         }
     };
