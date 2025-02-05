@@ -1,15 +1,13 @@
 "use client";
-import { Suspense, type FC } from "react";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, type FC } from "react";
 import ViewRacesForYear from "./ViewRacesForYear";
 import ViewTop5ByRace from "./ViewTop5ByRace";
 
