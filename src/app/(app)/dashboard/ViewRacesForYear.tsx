@@ -8,6 +8,7 @@ interface ViewRacesForYearProps {
 
 const ViewRacesForYear: FC<ViewRacesForYearProps> = ({ year, setSelectedRace }) => {
   const [races, setRaces] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await getRacesForYear(year);
@@ -20,6 +21,7 @@ const ViewRacesForYear: FC<ViewRacesForYearProps> = ({ year, setSelectedRace }) 
     setSelectedRace(race);
     setRaces([]);
   };
+
   return (
     <div className="space-y-4">
       {races.map((race) => (
