@@ -5,12 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-{
-  /* <pre className="bg-secondary p-4 rounded-sm shadow-sm text-secondary-foreground break-all whitespace-break-spaces">
-        {JSON.stringify(positions, null, 2)}
-      </pre> */
-}
-
 export const timestamps: { createdAt: true; updatedAt: true } = {
   createdAt: true,
   updatedAt: true,
@@ -26,3 +20,9 @@ export type OptimisticAction<T> = {
   action: Action;
   data: T;
 };
+
+{
+  /* <pre className="bg-secondary p-4 rounded-sm shadow-sm text-secondary-foreground break-all whitespace-break-spaces">
+        {JSON.stringify(positions, null, 2)}
+      </pre> */
+}
