@@ -10,7 +10,6 @@ export default async function Predictions() {
   // TODO bellow show previous predictions (maybe how much points the user got from the prediction aswell)
   // TODO predictions is not editable after the qualifying has started
   const { nextRace } = await getNextRace();
-  // const nextRace = null as null | Race;
   const { predictions } = await getPredictionsFull();
   const { drivers } = await getDrivers();
 
