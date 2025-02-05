@@ -11,7 +11,7 @@ import { nanoid, timestamps } from "@/lib/utils";
 
 export const predictions = pgTable('predictions', {
   id: varchar("id", { length: 191 }).primaryKey().$defaultFn(() => nanoid()),
-  raceId: integer("race_id").notNull(),
+  raceId: varchar("race_id").notNull(),
   pos1Driver: integer("pos_1_driver"),
   pos2Driver: integer("pos_2_driver"),
   pos3Driver: integer("pos_3_driver"),
@@ -34,7 +34,6 @@ const baseSchema = createSelectSchema(predictions).omit(timestamps)
 
 export const insertPredictionSchema = createInsertSchema(predictions).omit(timestamps);
 export const insertPredictionParams = baseSchema.extend({
-  raceId: z.coerce.number().nullable(),
   pos1Driver: z.coerce.number().nullable(),
   pos2Driver: z.coerce.number().nullable(),
   pos3Driver: z.coerce.number().nullable(),
@@ -47,14 +46,13 @@ export const insertPredictionParams = baseSchema.extend({
 
 export const updatePredictionSchema = baseSchema;
 export const updatePredictionParams = baseSchema.extend({
-  raceId: z.coerce.number(),
-  pos1Driver: z.coerce.number(),
-  pos2Driver: z.coerce.number(),
-  pos3Driver: z.coerce.number(),
-  pos4Driver: z.coerce.number(),
-  pos5Driver: z.coerce.number(),
+  pos1Driver: z.coerce.number().nullable(),
+  pos2Driver: z.coerce.number().nullable(),
+  pos3Driver: z.coerce.number().nullable(),
+  pos4Driver: z.coerce.number().nullable(),
+  pos5Driver: z.coerce.number().nullable(),
 }).omit({
-  userId: true
+  userId: true,
 });
 export const predictionIdSchema = baseSchema.pick({ id: true });
 

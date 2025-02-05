@@ -1,0 +1,1 @@
+ALTER TABLE "predictions" ALTER COLUMN "race_id" SET DATA TYPE varchar;
