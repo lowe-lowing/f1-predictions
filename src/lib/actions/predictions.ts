@@ -1,11 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import {
-  createPrediction,
-  deletePrediction,
-  updatePrediction,
-} from "@/lib/api/predictions/mutations";
+import { createPrediction, deletePrediction, updatePrediction } from "@/lib/api/predictions/mutations";
 import {
   PredictionId,
   NewPredictionParams,

@@ -1,0 +1,1 @@
+ALTER TABLE "races" ADD COLUMN "locked_at" timestamp;

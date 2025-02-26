@@ -13,10 +13,16 @@ const Sidebar = async () => {
     <aside className="h-screen min-w-52 bg-muted hidden md:block p-4 pt-8 border-r border-border shadow-inner">
       <div className="flex flex-col justify-between h-full">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold ml-4">CoolClub F1<br />Predictions</h3>
+          <h3 className="text-lg font-semibold ml-4">
+            CoolClub F1
+            <br />
+            Predictions
+          </h3>
           <SidebarItems />
         </div>
-        <UserDetails session={session} />
+        <div>
+          <UserDetails session={session} />
+        </div>
       </div>
     </aside>
   );
@@ -41,9 +47,9 @@ const UserDetails = ({ session }: { session: AuthSession }) => {
           <AvatarFallback className="border-border border-2 text-muted-foreground">
             {user.name
               ? user.name
-                ?.split(" ")
-                .map((word) => word[0].toUpperCase())
-                .join("")
+                  ?.split(" ")
+                  .map((word) => word[0].toUpperCase())
+                  .join("")
               : "~"}
           </AvatarFallback>
         </Avatar>

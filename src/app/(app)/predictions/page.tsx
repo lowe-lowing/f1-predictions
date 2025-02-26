@@ -8,19 +8,17 @@ export default async function Predictions() {
   // if prediction not created, show predictions form
   // else show prediction and edit button on the side
   // TODO bellow show previous predictions (maybe how much points the user got from the prediction aswell)
-  // TODO predictions is not editable after the qualifying has started
   const { nextRace } = await getNextRace();
   const { predictions } = await getPredictionsFull();
   const { drivers } = await getDrivers();
 
-  // TODO add a column "locked" to the predictions or races table to check if the prediction is editable
   const nextRacePrediction = predictions.find((prediction) => prediction.race.id === nextRace?.id);
   const previousPredictions = predictions.filter((prediction) => prediction.race.id !== nextRace?.id);
 
   return (
     <main className="space-y-4">
-      {nextRace && (
-        nextRacePrediction ? (
+      {nextRace &&
+        (nextRacePrediction ? (
           <>
             <p>Your prediction for the next race</p>
             <PredictionForm drivers={drivers} race={nextRace} prediction={nextRacePrediction} />
@@ -30,8 +28,7 @@ export default async function Predictions() {
             <p>Set your prediction for the next race</p>
             <PredictionForm drivers={drivers} race={nextRace} />
           </>
-        )
-      )}
+        ))}
 
       {previousPredictions.length > 0 && (
         <>
