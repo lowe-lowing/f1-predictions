@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 
@@ -15,7 +16,10 @@ export default function Navbar() {
   return (
     <div className="md:hidden border-b mb-4 pb-2 w-full">
       <nav className="flex justify-between w-full items-center">
-        <div className="font-semibold text-lg">CoolClub F1 Predictions</div>
+        <div className="flex items-center gap-2">
+          <Image src="/CoolClubF1Logo.svg" alt="CoolClub F1 logo" width={34} height={34} priority />
+          <div className="font-semibold text-lg">CoolClub F1</div>
+        </div>
         <Button variant="ghost" onClick={() => setOpen(!open)}>
           <AlignRight />
         </Button>

@@ -1,12 +1,5 @@
 "use client";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, type FC } from "react";
 import ViewRacesForYear from "./ViewRacesForYear";
 import ViewTop5ByRace from "./ViewTop5ByRace";
@@ -25,7 +18,6 @@ const ViewTop5: FC = () => {
           <SelectGroup>
             <SelectItem value="2024">2024</SelectItem>
             <SelectItem value="2023">2023</SelectItem>
-            <SelectItem value="2022">2022</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

@@ -43,10 +43,15 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
 
   // select driver, add to selected drivers and remove from available drivers
   const selectDriver = (driver: Driver, index: number) => {
+    const existingDriver = selectedDrivers[index];
+    let newAvailableDrivers = availableDrivers.filter((d) => d.id !== driver.id);
+    if (existingDriver) {
+      newAvailableDrivers = [...newAvailableDrivers, existingDriver];
+    }
     const newDrivers = [...selectedDrivers];
     newDrivers[index] = driver;
     setSelectedDrivers(newDrivers);
-    setAvailableDrivers(availableDrivers.filter((d) => d.id !== driver.id));
+    setAvailableDrivers(newAvailableDrivers);
   };
 
   // deselect driver, add back to available drivers and set selected driver to null
