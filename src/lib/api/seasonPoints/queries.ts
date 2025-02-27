@@ -40,25 +40,11 @@ export const getSeasonPointByIdWithPointHistory = async (id: SeasonPointId) => {
   return { seasonPoint: s, pointHistory: sp };
 };
 
-// const ranks = await getOrCreateRanksForUsersAndSeason(year);
-export const getOrCreateRanksForUsersAndSeason = async (year: number) => {
-  // get all users
-  const userRows = await db.select().from(users);
-  // get all season points
+export const getRanksForUsersAndSeason = async (year: number) => {
   const seasonPointRows = await db
     .select()
     .from(seasonPoints)
     .where(eq(seasonPoints.year, year))
     .innerJoin(users, eq(seasonPoints.userId, users.id));
-  // loop through all users
-  for (const user of userRows) {
-    // check if user has a season point for the current year
-    const seasonPoint = seasonPointRows.find((sp) => sp.user.id === user.id);
-    // if user does not have a season point for the current year, create one
-    if (seasonPoint === undefined) {
-      const newSeasonPoint = await db.insert(seasonPoints).values({ userId: user.id, year }).returning().execute();
-      seasonPointRows.push({ season_points: newSeasonPoint[0], user });
-    }
-  }
   return seasonPointRows;
 };

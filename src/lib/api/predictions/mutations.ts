@@ -10,6 +10,7 @@ import {
   predictionIdSchema,
 } from "@/lib/db/schema/predictions";
 import { getUserAuth } from "@/lib/auth/utils";
+import { seasonPoints } from "@/lib/db/schema/seasonPoints";
 
 export const createPrediction = async (prediction: NewPredictionParams) => {
   const { session } = await getUserAuth();
@@ -17,10 +18,15 @@ export const createPrediction = async (prediction: NewPredictionParams) => {
 
   try {
     const [p] = await db.insert(predictions).values(newPrediction).returning();
+    // create seasonPoints if not exists
+    const existingSeason = await db
+      .select()
+      .from(seasonPoints)
+      .where(and(eq(seasonPoints.userId, session?.user.id!), eq(seasonPoints.year, new Date().getFullYear())));
+    if (existingSeason.length > 0) return { prediction: p };
+    await db.insert(seasonPoints).values({ userId: session?.user.id!, year: new Date().getFullYear() }).returning();
     return { prediction: p };
   } catch (err) {
-    console.log(err);
-
     const message = (err as Error).message ?? "Error, please try again";
     console.error(message);
     throw { error: message };

@@ -1,8 +1,8 @@
-import { getOrCreateRanksForUsersAndSeason } from "@/lib/api/seasonPoints/queries";
+import { getRanksForUsersAndSeason } from "@/lib/api/seasonPoints/queries";
 
 export default async function ViewRanks() {
   const year = new Date().getFullYear();
-  const ranks = await getOrCreateRanksForUsersAndSeason(year);
+  const ranks = await getRanksForUsersAndSeason(year);
   return (
     <div>
       {ranks.map((r) => (
