@@ -8,25 +8,28 @@ interface ViewRacesForYearProps {
 
 const ViewRacesForYear: FC<ViewRacesForYearProps> = ({ year, setSelectedRace }) => {
   const [races, setRaces] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      setRaces([]);
       const res = await getRacesForYear(year);
       setRaces(res);
+      setIsLoading(false);
     };
     fetchData();
   }, [year]);
 
-  const handleSelectRace = (race: any) => {
-    setSelectedRace(race);
-    setRaces([]);
-  };
-
   return (
     <div className="space-y-4">
+      {isLoading && <p>Loading...</p>}
       {races.map((race) => (
         <div
-          onClick={() => handleSelectRace(race)}
+          onClick={() => {
+            setSelectedRace(race);
+            setRaces([]);
+          }}
           key={race.meeting_key}
           className="bg-secondary p-4 rounded-sm shadow-sm cursor-pointer"
         >

@@ -1,16 +1,19 @@
-import ViewRanks from "@/app/(app)/dashboard/ViewRanks";
-import ViewTop5 from "./ViewTop5";
-
-// TODO: Prio 1 Fix backend
-// TODO: Fix Home page score display
-// TODO: Move ViewTop5 to its own page
-// TODO: Fix drivers page
+import { getRanksForUsersAndSeason } from "@/lib/api/seasonPoints/queries";
 
 export default async function Home() {
+  const year = new Date().getFullYear();
+  const ranks = await getRanksForUsersAndSeason(year);
   return (
-    <main className="space-y-4">
-      <ViewRanks />
-      <ViewTop5 />
-    </main>
+    <div className="space-y-4">
+      <p className="text-2xl">Ranking for {year}</p>
+      <div className="space-y-2 max-w-fit">
+        {ranks.map((r) => (
+          <div key={r.season_points.id} className="flex gap-6 justify-between">
+            <p>{r.user.name}</p>
+            <p>{r.season_points.points}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

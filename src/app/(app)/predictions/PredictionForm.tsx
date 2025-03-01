@@ -95,7 +95,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
   return (
     <form action={formAction} className="space-y-4">
       {raceLocked && <p className="text-sm text-destructive -mb-2">Qualifying has begun and predictions are locked</p>}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <div>
           <p className="text-xl">{race.name}</p>
           <p className="text-sm text-muted-foreground" suppressHydrationWarning>
@@ -116,20 +116,20 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
       </div>
       <div className="space-y-2">
         {positions.map((position, index) => (
-          <div key={index} className="flex gap-2 items-center">
+          <div key={index} className="flex gap-2 items-center flex-wrap">
             <Label className="w-10">{position}</Label>
             {(prediction == null || editing) && (
               <SearchDriver drivers={availableDrivers} onSelect={(driver: Driver) => selectDriver(driver, index)} />
             )}
             {selectedDrivers[index] && (
-              <>
+              <div className="flex gap-2 items-center">
                 <DriverComponent driver={selectedDrivers[index]} />
                 {(prediction == null || editing) && (
                   <Button type="button" onClick={deselectDriver(index)} variant={"outline"} size={"icon"} tabIndex={-1}>
                     <X size={16} />
                   </Button>
                 )}
-              </>
+              </div>
             )}
           </div>
         ))}

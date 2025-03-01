@@ -1,5 +1,5 @@
 import { db } from "@/lib/db/index";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { getUserAuth } from "@/lib/auth/utils";
 import { type SeasonPointId, seasonPointIdSchema, seasonPoints } from "@/lib/db/schema/seasonPoints";
 import { pointHistory, type CompletePointHistory } from "@/lib/db/schema/pointHistory";
@@ -45,6 +45,7 @@ export const getRanksForUsersAndSeason = async (year: number) => {
     .select()
     .from(seasonPoints)
     .where(eq(seasonPoints.year, year))
-    .innerJoin(users, eq(seasonPoints.userId, users.id));
+    .innerJoin(users, eq(seasonPoints.userId, users.id))
+    .orderBy(desc(seasonPoints.points));
   return seasonPointRows;
 };

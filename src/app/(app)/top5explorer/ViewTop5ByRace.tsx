@@ -7,15 +7,22 @@ interface ViewTop5ByRaceProps {
 
 const ViewTop5ByRace: FC<ViewTop5ByRaceProps> = ({ meetingKey }) => {
   const [positions, setPositions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      setPositions([]);
       const res = await getTop5ForRace(meetingKey);
       setPositions(res);
+      setIsLoading(false);
     };
     fetchData();
   }, [meetingKey]);
+
   return (
     <div className="space-y-4">
+      {isLoading && <p>Loading...</p>}
       {positions.map((pos) => (
         <div key={pos.position} className="bg-secondary p-3 rounded-sm shadow-sm">
           <div className="flex gap-2">

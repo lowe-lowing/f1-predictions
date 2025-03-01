@@ -4,7 +4,6 @@ import Loading from "@/app/loading";
 import DriverList from "@/components/drivers/DriverList";
 import { getDrivers } from "@/lib/api/drivers/queries";
 
-
 export const revalidate = 0;
 
 export default async function DriversPage() {
@@ -21,12 +20,11 @@ export default async function DriversPage() {
 }
 
 const Drivers = async () => {
-  
   const { drivers } = await getDrivers();
-  
+
   return (
     <Suspense fallback={<Loading />}>
-      <DriverList drivers={drivers}  />
+      <DriverList drivers={drivers} />
     </Suspense>
   );
 };

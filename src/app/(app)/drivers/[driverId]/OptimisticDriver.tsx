@@ -1,38 +1,29 @@
 "use client";
 
-import { useOptimistic, useState } from "react";
 import { TAddOptimistic } from "@/app/(app)/drivers/useOptimisticDrivers";
 import { type Driver } from "@/lib/db/schema/drivers";
 import { cn } from "@/lib/utils";
+import { useOptimistic, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import Modal from "@/components/shared/Modal";
 import DriverForm from "@/components/drivers/DriverForm";
+import Modal from "@/components/shared/Modal";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
-
-export default function OptimisticDriver({ 
-  driver,
-   
-}: { 
-  driver: Driver; 
-  
-  
-}) {
+export default function OptimisticDriver({ driver }: { driver: Driver }) {
   const [open, setOpen] = useState(false);
   const openModal = (_?: Driver) => {
     setOpen(true);
   };
   const closeModal = () => setOpen(false);
   const [optimisticDriver, setOptimisticDriver] = useOptimistic(driver);
-  const updateDriver: TAddOptimistic = (input) =>
-    setOptimisticDriver({ ...input.data });
+  const updateDriver: TAddOptimistic = (input) => setOptimisticDriver({ ...input.data });
 
   return (
     <div className="m-4">
       <Modal open={open} setOpen={setOpen}>
         <DriverForm
           driver={optimisticDriver}
-          
           closeModal={closeModal}
           openModal={openModal}
           addOptimistic={updateDriver}
@@ -44,14 +35,33 @@ export default function OptimisticDriver({
           Edit
         </Button>
       </div>
-      <pre
-        className={cn(
-          "bg-secondary p-4 rounded-lg break-all text-wrap",
-          optimisticDriver.id === "optimistic" ? "animate-pulse" : "",
-        )}
-      >
-        {JSON.stringify(optimisticDriver, null, 2)}
-      </pre>
+      <BigDriverComponent driver={optimisticDriver} />
     </div>
   );
 }
+
+const BigDriverComponent = ({ driver }: { driver: Driver }) => {
+  return (
+    <div
+      className={cn(
+        "bg-secondary p-4 rounded-lg flex flex-wrap gap-2 items-start justify-between",
+        driver.id === "optimistic" ? "animate-pulse" : ""
+      )}
+    >
+      <div className="flex gap-2 items-start flex-wrap">
+        {driver.image && <Image src={driver.image} alt={`No Picture`} width={200} height={200} className="h-44 w-44" />}
+        <div className="flex gap-2 items-center">
+          <p className="text-3xl">#{driver.number}</p>
+          <div className="text-left">
+            <div className="text-xl">{driver.name}</div>
+            <div className="text-sm text-muted-foreground">{driver.team}</div>
+          </div>
+        </div>
+      </div>
+      <div className="text-xs text-muted-foreground">
+        <p>Created at: {new Date(driver.createdAt).toLocaleString()}</p>
+        <p>Updated at: {new Date(driver.updatedAt).toLocaleString()}</p>
+      </div>
+    </div>
+  );
+};

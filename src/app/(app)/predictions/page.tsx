@@ -1,13 +1,10 @@
+import PreviousPrediction from "@/app/(app)/predictions/PreviousPrediction";
 import { getDrivers } from "@/lib/api/drivers/queries";
 import { getPredictionsFull } from "@/lib/api/predictions/queries";
 import { getNextRace } from "@/lib/api/races/queries";
 import PredictionForm from "./PredictionForm";
 
 export default async function Predictions() {
-  // get next race
-  // if prediction not created, show predictions form
-  // else show prediction and edit button on the side
-  // TODO bellow show previous predictions (maybe how much points the user got from the prediction aswell)
   const { nextRace } = await getNextRace();
   const { predictions } = await getPredictionsFull();
   const { drivers } = await getDrivers();
@@ -29,21 +26,13 @@ export default async function Predictions() {
             <PredictionForm drivers={drivers} race={nextRace} />
           </>
         ))}
-
       {previousPredictions.length > 0 && (
-        <>
+        <div className="py-8 space-y-4">
           <p>Your previous predictions</p>
           {previousPredictions.map((prediction) => (
-            <div key={prediction.id}>
-              <p>Race: {prediction.race.name}</p>
-              <p>1st: {prediction.pos1Driver?.name}</p>
-              <p>2nd: {prediction.pos2Driver?.name}</p>
-              <p>3rd: {prediction.pos3Driver?.name}</p>
-              <p>4th: {prediction.pos4Driver?.name}</p>
-              <p>5th: {prediction.pos5Driver?.name}</p>
-            </div>
+            <PreviousPrediction key={prediction.id} prediction={prediction} />
           ))}
-        </>
+        </div>
       )}
     </main>
   );
