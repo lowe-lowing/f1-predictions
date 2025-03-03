@@ -14,7 +14,7 @@ export default function LandingPage() {
         </nav>
       </header>
       <main className="flex-1">
-        <section className="w-full pt-6 sm:pt-12 md:pt-20 lg:pt-24 pb-6">
+        <section className="w-full py-6 sm:pt-12 md:pt-20 lg:pt-24">
           <div className="container px-4 md:px-6 flex flex-col items-center gap-6 text-center">
             <Image src="/CoolClubF1Logo.svg" alt="CoolClub F1 logo" width={500} height={500} priority />
             <p className="text-5xl">Welcome to CoolClub F1 Predictions!</p>
