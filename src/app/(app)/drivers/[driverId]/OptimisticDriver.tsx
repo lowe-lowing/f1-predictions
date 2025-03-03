@@ -20,7 +20,7 @@ export default function OptimisticDriver({ driver }: { driver: Driver }) {
   const updateDriver: TAddOptimistic = (input) => setOptimisticDriver({ ...input.data });
 
   return (
-    <div className="m-4">
+    <div>
       <Modal open={open} setOpen={setOpen}>
         <DriverForm
           driver={optimisticDriver}

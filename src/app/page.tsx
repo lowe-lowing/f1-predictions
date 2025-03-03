@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import SignInLinkButton from "@/components/auth/SignInLinkButton";
 
 export default function LandingPage() {
   return (
@@ -9,9 +10,7 @@ export default function LandingPage() {
           <p>CoolClub F1 Predictions</p>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/sign-in">
-            Sign In
-          </Link>
+          <SignInLinkButton />
         </nav>
       </header>
       <main className="flex-1">
