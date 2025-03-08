@@ -3,6 +3,7 @@ import { getRanksForUsersAndSeason } from "@/lib/api/seasonPoints/queries";
 export default async function Home() {
   const year = new Date().getFullYear();
   const ranks = await getRanksForUsersAndSeason(year);
+
   return (
     <div className="space-y-4">
       <p className="text-2xl">Ranking for {year}</p>

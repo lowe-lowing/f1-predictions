@@ -1,8 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import SignInLinkButton from "@/components/auth/SignInLinkButton";
+import { redirectIfSignedIn } from "@/lib/auth/utils";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  await redirectIfSignedIn();
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-14 flex items-center">
