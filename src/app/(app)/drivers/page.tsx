@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import Loading from "@/app/loading";
 import DriverList from "@/components/drivers/DriverList";
-import { getDrivers } from "@/lib/api/drivers/queries";
+import { getDriversOrderedByTeam } from "@/lib/api/drivers/queries";
 
 export const revalidate = 0;
 
@@ -20,7 +20,7 @@ export default async function DriversPage() {
 }
 
 const Drivers = async () => {
-  const { drivers } = await getDrivers();
+  const { drivers } = await getDriversOrderedByTeam();
 
   return (
     <Suspense fallback={<Loading />}>

@@ -4,7 +4,13 @@ import { type DriverId, driverIdSchema, drivers } from "@/lib/db/schema/drivers"
 
 export const getDrivers = async () => {
   const rows = await db.select().from(drivers);
-  const d = rows
+  const d = rows;
+  return { drivers: d };
+};
+
+export const getDriversOrderedByTeam = async () => {
+  const rows = await db.select().from(drivers).orderBy(drivers.team);
+  const d = rows;
   return { drivers: d };
 };
 
@@ -15,5 +21,3 @@ export const getDriverById = async (id: DriverId) => {
   const d = row;
   return { driver: d };
 };
-
-
