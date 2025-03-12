@@ -148,7 +148,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
             </div>
             <div
               className={cn(
-                "border h-10 sm:h-14 sm:pr-1",
+                "border h-12 sm:h-14 py-1 pr-1",
                 { "border-dashed rounded-md border-muted-foreground": draggedIndex !== null },
                 { "border-transparent": draggedIndex === null }
               )}
@@ -174,7 +174,6 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
                       variant={"outline"}
                       size={"icon"}
                       tabIndex={-1}
-                      className="-z-10"
                     >
                       <X size={16} />
                     </Button>
