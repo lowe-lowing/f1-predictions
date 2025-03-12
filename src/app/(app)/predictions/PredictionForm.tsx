@@ -148,7 +148,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
             </div>
             <div
               className={cn(
-                "border h-12 sm:h-14 py-1 pr-1",
+                "border h-12 sm:h-16 py-1 pr-1",
                 { "border-dashed rounded-md border-muted-foreground": draggedIndex !== null },
                 { "border-transparent": draggedIndex === null }
               )}
@@ -162,7 +162,6 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
                   onDragEnd={() => setDraggedIndex(null)}
                   draggable={editing}
                 >
-                  {/* TODO: Do i really need to make it smaller here? */}
                   <DriverComponent
                     driver={selectedDrivers[index]}
                     className={cn("w-full", { "cursor-grab": editing })}
