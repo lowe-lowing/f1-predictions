@@ -21,7 +21,7 @@ export default function SearchDriver({ drivers, onSelect }: SearchDriverProps) {
 
   return (
     <div className="flex gap-2 items-center">
-      <Command className="relative  max-w-lg overflow-visible rounded-lg border" ref={commandRef}>
+      <Command className="relative max-w-lg overflow-visible rounded-lg border" ref={commandRef}>
         <CommandInput
           className="border-none outline-none ring-0 focus:border-none focus:outline-none"
           placeholder="Search drivers..."

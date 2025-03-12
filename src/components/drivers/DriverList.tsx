@@ -64,7 +64,7 @@ const Driver = ({ driver, openModal }: { driver: CompleteDriver; openModal: TOpe
   return (
     <li
       className={cn(
-        "flex justify-between my-2",
+        "flex justify-between my-2 items-center",
         mutating ? "opacity-30 animate-pulse" : "",
         deleting ? "text-destructive" : ""
       )}

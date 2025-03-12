@@ -11,6 +11,7 @@ import { Lock, X } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
 import { DriverComponent } from "./DriverComponent";
 import SearchDriver from "./SearchDriver";
+import { set } from "zod";
 
 let initialState: void;
 const positions = ["1st", "2nd", "3rd", "4th", "5th"];
@@ -92,6 +93,22 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
 
   const [state, formAction] = useActionState(onSubmit, initialState);
 
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  const handleDrop = (index: any) => {
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    // Reorder array
+    const updatedItems = [...selectedDrivers];
+    const currentItem = updatedItems[index];
+    const draggedItem = updatedItems[draggedIndex];
+    updatedItems[index] = draggedItem;
+    updatedItems[draggedIndex] = currentItem;
+
+    setSelectedDrivers(updatedItems);
+    setDraggedIndex(null);
+  };
+
   return (
     <form action={formAction} className="space-y-4">
       {raceLocked && <p className="text-sm text-destructive -mb-2">Qualifying has begun and predictions are locked</p>}
@@ -114,23 +131,57 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
           </Button>
         )}
       </div>
-      <div className="space-y-2">
+      <div className={cn("w-fit space-y-2", { "space-y-4 sm:space-y-2 md:space-y-4 lg:space-y-2": editing })}>
         {positions.map((position, index) => (
-          <div key={index} className="flex gap-2 items-center flex-wrap">
-            <Label className="w-10">{position}</Label>
-            {(prediction == null || editing) && (
-              <SearchDriver drivers={availableDrivers} onSelect={(driver: Driver) => selectDriver(driver, index)} />
-            )}
-            {selectedDrivers[index] && (
-              <div className="flex gap-2 items-center">
-                <DriverComponent driver={selectedDrivers[index]} />
-                {(prediction == null || editing) && (
-                  <Button type="button" onClick={deselectDriver(index)} variant={"outline"} size={"icon"} tabIndex={-1}>
-                    <X size={16} />
-                  </Button>
-                )}
-              </div>
-            )}
+          <div
+            key={index}
+            className={cn("grid", {
+              "sm:grid-cols-[auto_1fr] md:grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 items-center": editing,
+              "grid-cols-[auto_1fr]": !editing,
+            })}
+          >
+            <div className="flex items-center gap-2">
+              <Label className="w-10 sm:w-14 text-center">{position}</Label>
+              {(prediction == null || editing) && (
+                <SearchDriver drivers={availableDrivers} onSelect={(driver: Driver) => selectDriver(driver, index)} />
+              )}
+            </div>
+            <div
+              className={cn(
+                "border h-10 sm:h-14 sm:pr-1",
+                { "border-dashed rounded-md border-muted-foreground": draggedIndex !== null },
+                { "border-transparent": draggedIndex === null }
+              )}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => handleDrop(index)}
+            >
+              {selectedDrivers[index] && (
+                <div
+                  className="flex gap-2 items-center"
+                  onDragStart={() => setDraggedIndex(index)}
+                  onDragEnd={() => setDraggedIndex(null)}
+                  draggable={editing}
+                >
+                  {/* TODO: Do i really need to make it smaller here? */}
+                  <DriverComponent
+                    driver={selectedDrivers[index]}
+                    className={cn("w-full", { "cursor-grab": editing })}
+                  />
+                  {(prediction == null || editing) && (
+                    <Button
+                      type="button"
+                      onClick={deselectDriver(index)}
+                      variant={"outline"}
+                      size={"icon"}
+                      tabIndex={-1}
+                      className="-z-10"
+                    >
+                      <X size={16} />
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
