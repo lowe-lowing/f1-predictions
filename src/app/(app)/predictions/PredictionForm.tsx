@@ -190,8 +190,9 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
                     ) : (
                       <DriverComponent driver={selectedDrivers[index]} className="w-full" />
                     )}
-                    {(prediction == null || editing) && draggedIndex !== index && (
+                    {(prediction == null || editing) && (
                       <Button
+                        className={cn({ invisible: draggedIndex === index })}
                         type="button"
                         onClick={deselectDriver(index)}
                         variant={"outline"}
