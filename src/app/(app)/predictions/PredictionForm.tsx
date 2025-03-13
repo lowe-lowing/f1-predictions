@@ -6,7 +6,17 @@ import { PredictionFull } from "@/lib/api/predictions/queries";
 import { Driver } from "@/lib/db/schema/drivers";
 import { Race } from "@/lib/db/schema/races";
 import { cn } from "@/lib/utils";
-import { DndContext, DragEndEvent, useDraggable, useDroppable } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Lock, X } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
@@ -112,6 +122,20 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
     setSelectedDrivers(updatedItems);
   };
 
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 300,
+        tolerance: 8,
+      },
+    })
+  );
+
   return (
     <form action={formAction} className="space-y-4">
       {raceLocked && <p className="text-sm text-destructive -mb-2">Qualifying has begun and predictions are locked</p>}
@@ -134,7 +158,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
           </Button>
         )}
       </div>
-      <DndContext onDragEnd={handleDrop}>
+      <DndContext onDragEnd={handleDrop} sensors={sensors}>
         <div className={cn("w-fit space-y-2", { "space-y-4 sm:space-y-2 md:space-y-4 lg:space-y-2": editing })}>
           {positions.map((position, index) => (
             <div
@@ -160,7 +184,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
               >
                 {selectedDrivers[index] && (
                   <div className="flex gap-2 items-center">
-                    <Draggable index={index} className="w-full touch-none" setDraggedIndex={setDraggedIndex}>
+                    <Draggable index={index} className="w-full" setDraggedIndex={setDraggedIndex}>
                       <DriverComponent
                         driver={selectedDrivers[index]}
                         className={cn("w-full", { "cursor-grab": editing })}
