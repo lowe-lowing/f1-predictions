@@ -160,7 +160,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
               >
                 {selectedDrivers[index] && (
                   <div className="flex gap-2 items-center">
-                    <Draggable index={index} className="w-full" setDraggedIndex={setDraggedIndex}>
+                    <Draggable index={index} className="w-full touch-none" setDraggedIndex={setDraggedIndex}>
                       <DriverComponent
                         driver={selectedDrivers[index]}
                         className={cn("w-full", { "cursor-grab": editing })}
