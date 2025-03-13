@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { DndContext, DragEndEvent, useDraggable, useDroppable } from "@dnd-kit/core";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Lock, X } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { DriverComponent } from "./DriverComponent";
 import SearchDriver from "./SearchDriver";
 
@@ -94,7 +94,6 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
   const [state, formAction] = useActionState(onSubmit, initialState);
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [touchIndex, setTouchIndex] = useState<number | null>(null);
 
   const handleDrop = (event: DragEndEvent) => {
     const { over, active } = event;
@@ -111,7 +110,6 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
     updatedItems[draggedIndex] = currentItem;
 
     setSelectedDrivers(updatedItems);
-    setDraggedIndex(null);
   };
 
   return (
@@ -153,35 +151,33 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
                 )}
               </div>
               <Droppable
-                id={index}
+                index={index}
                 className={cn(
                   "border h-12 sm:h-16 py-1 pr-1",
                   { "border-dashed rounded-md border-muted-foreground": draggedIndex !== null },
                   { "border-transparent": draggedIndex === null }
                 )}
-                // onDragOver={(e) => e.preventDefault()}
-                // onDrop={() => handleDrop(index)}
               >
                 {selectedDrivers[index] && (
-                  <Draggable index={index}>
-                    <div className="flex gap-2 items-center">
+                  <div className="flex gap-2 items-center">
+                    <Draggable index={index} className="w-full" setDraggedIndex={setDraggedIndex}>
                       <DriverComponent
                         driver={selectedDrivers[index]}
                         className={cn("w-full", { "cursor-grab": editing })}
                       />
-                      {(prediction == null || editing) && (
-                        <Button
-                          type="button"
-                          onClick={deselectDriver(index)}
-                          variant={"outline"}
-                          size={"icon"}
-                          tabIndex={-1}
-                        >
-                          <X size={16} />
-                        </Button>
-                      )}
-                    </div>
-                  </Draggable>
+                    </Draggable>
+                    {(prediction == null || editing) && draggedIndex === null && (
+                      <Button
+                        type="button"
+                        onClick={deselectDriver(index)}
+                        variant={"outline"}
+                        size={"icon"}
+                        tabIndex={-1}
+                      >
+                        <X size={16} />
+                      </Button>
+                    )}
+                  </div>
                 )}
               </Droppable>
             </div>
@@ -216,32 +212,40 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
   );
 }
 
-const Draggable = ({ children, index }: { children: React.ReactNode; index: number }) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+interface DraggableProps extends React.HTMLAttributes<HTMLDivElement> {
+  index: number;
+  setDraggedIndex: (index: number | null) => void;
+}
+const Draggable = ({ children, index, setDraggedIndex, ...props }: DraggableProps) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: index,
   });
+  useEffect(() => {
+    setDraggedIndex(isDragging ? index : null);
+  }, [isDragging]);
   const style = transform
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
       }
     : undefined;
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} {...props}>
       {children}
     </div>
   );
 };
 
-export function Droppable(props: any) {
+interface DroppableProps extends React.HTMLAttributes<HTMLDivElement> {
+  index: number;
+}
+
+export function Droppable({ index, ...props }: DroppableProps) {
   const { isOver, setNodeRef } = useDroppable({
-    id: props.id,
+    id: index,
   });
-  const style = {
-    color: isOver ? "green" : undefined,
-  };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} {...props}>
       {props.children}
     </div>
   );
