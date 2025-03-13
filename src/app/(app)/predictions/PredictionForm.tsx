@@ -94,6 +94,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
   const [state, formAction] = useActionState(onSubmit, initialState);
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [touchIndex, setTouchIndex] = useState<number | null>(null);
 
   const handleDrop = (index: any) => {
     if (draggedIndex === null || draggedIndex === index) return;
@@ -107,6 +108,20 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
 
     setSelectedDrivers(updatedItems);
     setDraggedIndex(null);
+  };
+
+  const handleTouchEnd = (index: number) => {
+    if (touchIndex === null || touchIndex === index) return;
+
+    // Reorder array
+    const updatedItems = [...selectedDrivers];
+    const currentItem = updatedItems[index];
+    const draggedItem = updatedItems[touchIndex];
+    updatedItems[index] = draggedItem;
+    updatedItems[touchIndex] = currentItem;
+
+    setSelectedDrivers(updatedItems);
+    setTouchIndex(null);
   };
 
   return (
@@ -154,13 +169,23 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
               )}
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleDrop(index)}
+              onTouchEnd={() => handleTouchEnd(index)}
             >
               {selectedDrivers[index] && (
                 <div
                   className="flex gap-2 items-center"
                   onDragStart={() => setDraggedIndex(index)}
                   onDragEnd={() => setDraggedIndex(null)}
+                  onTouchStart={() => setTouchIndex(index)}
                   draggable={editing}
+                  // onTouchStart={(e) => console.log("touch start", e)}
+                  // onTouchMove={(e) => console.log("touch move", e)}
+                  // onTouchEnd={(e) => console.log("touch end", e)}
+                  // onTouchMoveCapture={(e) => console.log("touch move capture", e)}
+                  // onTouchEndCapture={(e) => console.log("touch end capture", e)}
+                  // onTouchCancel={(e) => console.log("touch cancel", e)}
+                  // onTouchCancelCapture={(e) => console.log("touch cancel capture", e)}
+                  // onTouchStartCapture={(e) => console.log("touch start capture", e)}
                 >
                   <DriverComponent
                     driver={selectedDrivers[index]}
