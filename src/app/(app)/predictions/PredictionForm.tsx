@@ -6,12 +6,12 @@ import { PredictionFull } from "@/lib/api/predictions/queries";
 import { Driver } from "@/lib/db/schema/drivers";
 import { Race } from "@/lib/db/schema/races";
 import { cn } from "@/lib/utils";
+import { DndContext, DragEndEvent, useDraggable, useDroppable } from "@dnd-kit/core";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Lock, X } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { DriverComponent } from "./DriverComponent";
 import SearchDriver from "./SearchDriver";
-import { set } from "zod";
 
 let initialState: void;
 const positions = ["1st", "2nd", "3rd", "4th", "5th"];
@@ -96,7 +96,11 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [touchIndex, setTouchIndex] = useState<number | null>(null);
 
-  const handleDrop = (index: any) => {
+  const handleDrop = (event: DragEndEvent) => {
+    const { over, active } = event;
+    if (!over) return;
+    const index = over.id as number;
+    const draggedIndex = active.id as number;
     if (draggedIndex === null || draggedIndex === index) return;
 
     // Reorder array
@@ -108,20 +112,6 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
 
     setSelectedDrivers(updatedItems);
     setDraggedIndex(null);
-  };
-
-  const handleTouchEnd = (index: number) => {
-    if (touchIndex === null || touchIndex === index) return;
-
-    // Reorder array
-    const updatedItems = [...selectedDrivers];
-    const currentItem = updatedItems[index];
-    const draggedItem = updatedItems[touchIndex];
-    updatedItems[index] = draggedItem;
-    updatedItems[touchIndex] = currentItem;
-
-    setSelectedDrivers(updatedItems);
-    setTouchIndex(null);
   };
 
   return (
@@ -146,68 +136,58 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
           </Button>
         )}
       </div>
-      <div className={cn("w-fit space-y-2", { "space-y-4 sm:space-y-2 md:space-y-4 lg:space-y-2": editing })}>
-        {positions.map((position, index) => (
-          <div
-            key={index}
-            className={cn("grid", {
-              "sm:grid-cols-[auto_1fr] md:grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 items-center": editing,
-              "grid-cols-[auto_1fr]": !editing,
-            })}
-          >
-            <div className="flex items-center gap-2">
-              <Label className="w-10 sm:w-14 text-center">{position}</Label>
-              {(prediction == null || editing) && (
-                <SearchDriver drivers={availableDrivers} onSelect={(driver: Driver) => selectDriver(driver, index)} />
-              )}
-            </div>
+      <DndContext onDragEnd={handleDrop}>
+        <div className={cn("w-fit space-y-2", { "space-y-4 sm:space-y-2 md:space-y-4 lg:space-y-2": editing })}>
+          {positions.map((position, index) => (
             <div
-              className={cn(
-                "border h-12 sm:h-16 py-1 pr-1",
-                { "border-dashed rounded-md border-muted-foreground": draggedIndex !== null },
-                { "border-transparent": draggedIndex === null }
-              )}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => handleDrop(index)}
-              onTouchEnd={() => handleTouchEnd(index)}
+              key={index}
+              className={cn("grid", {
+                "sm:grid-cols-[auto_1fr] md:grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 items-center": editing,
+                "grid-cols-[auto_1fr]": !editing,
+              })}
             >
-              {selectedDrivers[index] && (
-                <div
-                  className="flex gap-2 items-center"
-                  onDragStart={() => setDraggedIndex(index)}
-                  onDragEnd={() => setDraggedIndex(null)}
-                  onTouchStart={() => setTouchIndex(index)}
-                  draggable={editing}
-                  // onTouchStart={(e) => console.log("touch start", e)}
-                  // onTouchMove={(e) => console.log("touch move", e)}
-                  // onTouchEnd={(e) => console.log("touch end", e)}
-                  // onTouchMoveCapture={(e) => console.log("touch move capture", e)}
-                  // onTouchEndCapture={(e) => console.log("touch end capture", e)}
-                  // onTouchCancel={(e) => console.log("touch cancel", e)}
-                  // onTouchCancelCapture={(e) => console.log("touch cancel capture", e)}
-                  // onTouchStartCapture={(e) => console.log("touch start capture", e)}
-                >
-                  <DriverComponent
-                    driver={selectedDrivers[index]}
-                    className={cn("w-full", { "cursor-grab": editing })}
-                  />
-                  {(prediction == null || editing) && (
-                    <Button
-                      type="button"
-                      onClick={deselectDriver(index)}
-                      variant={"outline"}
-                      size={"icon"}
-                      tabIndex={-1}
-                    >
-                      <X size={16} />
-                    </Button>
-                  )}
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <Label className="w-10 sm:w-14 text-center">{position}</Label>
+                {(prediction == null || editing) && (
+                  <SearchDriver drivers={availableDrivers} onSelect={(driver: Driver) => selectDriver(driver, index)} />
+                )}
+              </div>
+              <Droppable
+                id={index}
+                className={cn(
+                  "border h-12 sm:h-16 py-1 pr-1",
+                  { "border-dashed rounded-md border-muted-foreground": draggedIndex !== null },
+                  { "border-transparent": draggedIndex === null }
+                )}
+                // onDragOver={(e) => e.preventDefault()}
+                // onDrop={() => handleDrop(index)}
+              >
+                {selectedDrivers[index] && (
+                  <Draggable index={index}>
+                    <div className="flex gap-2 items-center">
+                      <DriverComponent
+                        driver={selectedDrivers[index]}
+                        className={cn("w-full", { "cursor-grab": editing })}
+                      />
+                      {(prediction == null || editing) && (
+                        <Button
+                          type="button"
+                          onClick={deselectDriver(index)}
+                          variant={"outline"}
+                          size={"icon"}
+                          tabIndex={-1}
+                        >
+                          <X size={16} />
+                        </Button>
+                      )}
+                    </div>
+                  </Draggable>
+                )}
+              </Droppable>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </DndContext>
       {raceLocked ? null : prediction ? (
         editing && (
           <>
@@ -233,5 +213,36 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
         <FormLoadingButton disabled={!selectedDrivers.some((d) => d != null)}>Create Prediction</FormLoadingButton>
       )}
     </form>
+  );
+}
+
+const Draggable = ({ children, index }: { children: React.ReactNode; index: number }) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: index,
+  });
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+      {children}
+    </div>
+  );
+};
+
+export function Droppable(props: any) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: props.id,
+  });
+  const style = {
+    color: isOver ? "green" : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      {props.children}
+    </div>
   );
 }
