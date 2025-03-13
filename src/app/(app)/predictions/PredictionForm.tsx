@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import {
   DndContext,
   DragEndEvent,
-  KeyboardSensor,
   MouseSensor,
   TouchSensor,
   useDraggable,
@@ -32,7 +31,7 @@ interface CreatePredictionFormProps {
   prediction?: PredictionFull;
 }
 
-// export default function PredictionForm({ drivers, race, prediction }: CreatePredictionFormProps) {
+// TODO: improve the readability of this component, take some ideas from chatgpt
 export default function PredictionForm({ drivers, race, prediction }: CreatePredictionFormProps) {
   const predictedDriverIds = [
     prediction?.pos1Driver?.id || null,
@@ -184,13 +183,14 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
               >
                 {selectedDrivers[index] && (
                   <div className="flex gap-2 items-center">
-                    <Draggable index={index} className="w-full" setDraggedIndex={setDraggedIndex}>
-                      <DriverComponent
-                        driver={selectedDrivers[index]}
-                        className={cn("w-full", { "cursor-grab": editing })}
-                      />
-                    </Draggable>
-                    {(prediction == null || editing) && draggedIndex === null && (
+                    {editing ? (
+                      <Draggable index={index} className="w-full" setDraggedIndex={setDraggedIndex}>
+                        <DriverComponent driver={selectedDrivers[index]} className="w-full cursor-grab" />
+                      </Draggable>
+                    ) : (
+                      <DriverComponent driver={selectedDrivers[index]} className="w-full" />
+                    )}
+                    {(prediction == null || editing) && draggedIndex !== index && (
                       <Button
                         type="button"
                         onClick={deselectDriver(index)}
@@ -250,6 +250,7 @@ const Draggable = ({ children, index, setDraggedIndex, ...props }: DraggableProp
   const style = transform
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        zIndex: isDragging ? 1 : undefined,
       }
     : undefined;
   return (
@@ -263,13 +264,13 @@ interface DroppableProps extends React.HTMLAttributes<HTMLDivElement> {
   index: number;
 }
 
-export function Droppable({ index, ...props }: DroppableProps) {
+export function Droppable({ index, className, ...props }: DroppableProps) {
   const { isOver, setNodeRef } = useDroppable({
     id: index,
   });
 
   return (
-    <div ref={setNodeRef} {...props}>
+    <div ref={setNodeRef} {...props} className={cn(className, { "border-primary": isOver })}>
       {props.children}
     </div>
   );
