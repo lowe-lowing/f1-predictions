@@ -7,7 +7,6 @@ import { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { defaultLinks, additionalLinks } from "@/config/nav";
-import { AuthSession } from "@/lib/auth/utils";
 import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
 

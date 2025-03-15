@@ -24,7 +24,7 @@ export const additionalLinks: AdditionalLinks[] = [
         icon: CarFront,
       },
       {
-        href: "user-permissions",
+        href: "/user-permissions",
         title: "User Permissions",
         icon: Lock,
         onlyFor: "lowe.lowing@gmail.com",
