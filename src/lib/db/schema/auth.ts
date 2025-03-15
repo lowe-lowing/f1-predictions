@@ -1,10 +1,4 @@
-import {
-  timestamp,
-  pgTable,
-  text,
-  primaryKey,
-  integer,
-} from "drizzle-orm/pg-core";
+import { timestamp, pgTable, text, primaryKey, integer } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 
 export const users = pgTable("user", {
@@ -14,6 +8,8 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
 });
+
+export type User = typeof users.$inferSelect;
 
 export const accounts = pgTable(
   "account",

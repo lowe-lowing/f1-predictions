@@ -6,6 +6,7 @@ import OptimisticDriver from "./OptimisticDriver";
 
 import { BackButton } from "@/components/shared/BackButton";
 import Loading from "@/app/loading";
+import { getCanEditDrivers } from "@/lib/api/userPermissions/queries";
 
 export const revalidate = 0;
 
@@ -21,13 +22,14 @@ export default async function DriverPage({ params }: { params: Promise<{ driverI
 
 const Driver = async ({ id }: { id: string }) => {
   const { driver } = await getDriverById(id);
-
   if (!driver) notFound();
+
+  const canEdit = await getCanEditDrivers();
   return (
     <Suspense fallback={<Loading />}>
       <div className="relative">
         <BackButton currentResource="drivers" />
-        <OptimisticDriver driver={driver} />
+        <OptimisticDriver driver={driver} canEdit={canEdit} />
       </div>
     </Suspense>
   );

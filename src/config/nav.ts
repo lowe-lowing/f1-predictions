@@ -1,5 +1,5 @@
 import { SidebarLink } from "@/components/SidebarItems";
-import { CarFront, Cog, HomeIcon, List, Trophy, User } from "lucide-react";
+import { CarFront, Cog, HomeIcon, List, Lock, Trophy, User } from "lucide-react";
 
 type AdditionalLinks = {
   title: string;
@@ -22,6 +22,12 @@ export const additionalLinks: AdditionalLinks[] = [
         href: "/drivers",
         title: "Drivers",
         icon: CarFront,
+      },
+      {
+        href: "user-permissions",
+        title: "User Permissions",
+        icon: Lock,
+        onlyFor: "lowe.lowing@gmail.com",
       },
     ],
   },

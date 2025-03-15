@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Loading from "@/app/loading";
 import DriverList from "@/components/drivers/DriverList";
 import { getDriversOrderedByTeam } from "@/lib/api/drivers/queries";
+import { getCanEditDrivers } from "@/lib/api/userPermissions/queries";
 
 export const revalidate = 0;
 
@@ -22,9 +23,10 @@ export default async function DriversPage() {
 const Drivers = async () => {
   const { drivers } = await getDriversOrderedByTeam();
 
+  const canEdit = await getCanEditDrivers();
   return (
     <Suspense fallback={<Loading />}>
-      <DriverList drivers={drivers} />
+      <DriverList drivers={drivers} canEdit={canEdit} />
     </Suspense>
   );
 };

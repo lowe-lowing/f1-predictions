@@ -16,7 +16,7 @@ import { DriverComponent } from "@/app/(app)/predictions/DriverComponent";
 
 type TOpenModal = (driver?: Driver) => void;
 
-export default function DriverList({ drivers }: { drivers: CompleteDriver[] }) {
+export default function DriverList({ drivers, canEdit }: { drivers: CompleteDriver[]; canEdit: boolean }) {
   const { optimisticDrivers, addOptimisticDriver } = useOptimisticDrivers(drivers);
   const [open, setOpen] = useState(false);
   const [activeDriver, setActiveDriver] = useState<Driver | null>(null);
@@ -31,6 +31,7 @@ export default function DriverList({ drivers }: { drivers: CompleteDriver[] }) {
       <Modal open={open} setOpen={setOpen} title={activeDriver ? "Edit Driver" : "Create Driver"}>
         <DriverForm
           driver={activeDriver}
+          canEdit={canEdit}
           addOptimistic={addOptimisticDriver}
           openModal={openModal}
           closeModal={closeModal}

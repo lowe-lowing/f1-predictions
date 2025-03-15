@@ -26,8 +26,7 @@ export const getPredictionById = async (id: PredictionId) => {
   return { prediction: p };
 };
 
-type PredictionsArray = Awaited<ReturnType<typeof getPredictionsFull>>["predictions"];
-export type PredictionFull = PredictionsArray[number];
+export type PredictionFull = Awaited<ReturnType<typeof getPredictionsFull>>["predictions"][number];
 
 export const getPredictionsFull = async () => {
   const { session } = await getUserAuth();

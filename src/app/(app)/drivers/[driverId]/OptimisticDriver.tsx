@@ -10,7 +10,7 @@ import Modal from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-export default function OptimisticDriver({ driver }: { driver: Driver }) {
+export default function OptimisticDriver({ driver, canEdit }: { driver: Driver; canEdit: boolean }) {
   const [open, setOpen] = useState(false);
   const openModal = (_?: Driver) => {
     setOpen(true);
@@ -21,9 +21,10 @@ export default function OptimisticDriver({ driver }: { driver: Driver }) {
 
   return (
     <div>
-      <Modal open={open} setOpen={setOpen}>
+      <Modal open={open} setOpen={setOpen} title="Edit Driver">
         <DriverForm
           driver={optimisticDriver}
+          canEdit={canEdit}
           closeModal={closeModal}
           openModal={openModal}
           addOptimistic={updateDriver}
