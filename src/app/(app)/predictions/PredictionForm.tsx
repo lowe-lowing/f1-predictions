@@ -163,8 +163,9 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
             <div
               key={index}
               className={cn("grid", {
-                "sm:grid-cols-[auto_1fr] md:grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 items-center": editing,
-                "grid-cols-[auto_1fr]": !editing,
+                "sm:grid-cols-[auto_1fr] md:grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 items-center":
+                  editing || !prediction,
+                "grid-cols-[auto_1fr]": !editing && prediction,
               })}
             >
               <div className="flex items-center gap-2">
@@ -183,7 +184,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
               >
                 {selectedDrivers[index] && (
                   <div className="flex gap-2 items-center">
-                    {editing ? (
+                    {editing || !prediction ? (
                       <Draggable index={index} className="w-full" setDraggedIndex={setDraggedIndex}>
                         <DriverComponent driver={selectedDrivers[index]} className="w-full cursor-grab" />
                       </Draggable>
