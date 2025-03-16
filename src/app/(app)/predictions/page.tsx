@@ -1,8 +1,8 @@
+import PredictionForm from "@/app/(app)/predictions/PredictionForm";
 import PreviousPrediction from "@/app/(app)/predictions/PreviousPrediction";
 import { getDrivers } from "@/lib/api/drivers/queries";
 import { getPredictionsFull } from "@/lib/api/predictions/queries";
 import { getNextRace } from "@/lib/api/races/queries";
-import PredictionForm from "./PredictionForm";
 
 export default async function Predictions() {
   const { nextRace } = await getNextRace();

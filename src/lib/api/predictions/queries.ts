@@ -4,6 +4,7 @@ import { drivers } from "@/lib/db/schema/drivers";
 import { pointHistory } from "@/lib/db/schema/pointHistory";
 import { type PredictionId, predictionIdSchema, predictions } from "@/lib/db/schema/predictions";
 import { races } from "@/lib/db/schema/races";
+import { seasonPoints } from "@/lib/db/schema/seasonPoints";
 import { and, eq, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -58,9 +59,6 @@ export const getPredictionsFull = async () => {
         points: sql<number>`
         (CASE WHEN ${pos1Point.driverId} IS NOT NULL THEN 1 ELSE 0 END) +
         (CASE WHEN ${pos1Point.pointForPosition} = 1 THEN 1 ELSE 0 END)`,
-        // number: pos1Driver.number,
-        // createdAt: pos1Driver.createdAt,
-        // updatedAt: pos1Driver.updatedAt,
       },
       pos2Driver: {
         id: pos2Driver.id,
@@ -102,16 +100,17 @@ export const getPredictionsFull = async () => {
     .from(predictions)
     .where(eq(predictions.userId, session?.user.id!))
     .innerJoin(races, eq(predictions.raceId, races.id))
+    .innerJoin(seasonPoints, and(eq(seasonPoints.userId, session?.user.id!), eq(seasonPoints.year, races.season)))
     .leftJoin(pos1Driver, eq(pos1Driver.id, predictions.pos1DriverId))
     .leftJoin(pos2Driver, eq(pos2Driver.id, predictions.pos2DriverId))
     .leftJoin(pos3Driver, eq(pos3Driver.id, predictions.pos3DriverId))
     .leftJoin(pos4Driver, eq(pos4Driver.id, predictions.pos4DriverId))
     .leftJoin(pos5Driver, eq(pos5Driver.id, predictions.pos5DriverId))
-    .leftJoin(pos1Point, eq(pos1Point.driverId, predictions.pos1DriverId))
-    .leftJoin(pos2Point, eq(pos2Point.driverId, predictions.pos2DriverId))
-    .leftJoin(pos3Point, eq(pos3Point.driverId, predictions.pos3DriverId))
-    .leftJoin(pos4Point, eq(pos4Point.driverId, predictions.pos4DriverId))
-    .leftJoin(pos5Point, eq(pos5Point.driverId, predictions.pos5DriverId));
+    .leftJoin(pos1Point, and(eq(pos1Point.seasonPointId, seasonPoints.id), eq(pos1Point.driverId, pos1Driver.id)))
+    .leftJoin(pos2Point, and(eq(pos2Point.seasonPointId, seasonPoints.id), eq(pos2Point.driverId, pos2Driver.id)))
+    .leftJoin(pos3Point, and(eq(pos3Point.seasonPointId, seasonPoints.id), eq(pos3Point.driverId, pos3Driver.id)))
+    .leftJoin(pos4Point, and(eq(pos4Point.seasonPointId, seasonPoints.id), eq(pos4Point.driverId, pos4Driver.id)))
+    .leftJoin(pos5Point, and(eq(pos5Point.seasonPointId, seasonPoints.id), eq(pos5Point.driverId, pos5Driver.id)));
 
   const p = rows;
   return { predictions: p };
