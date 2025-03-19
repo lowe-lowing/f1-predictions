@@ -23,6 +23,7 @@ import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DriverComponent } from "./DriverComponent";
 import SearchDriver from "./SearchDriver";
+import { sv } from "date-fns/locale";
 
 let initialState: void;
 const positions = ["1st", "2nd", "3rd", "4th", "5th"];
@@ -186,8 +187,11 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
           <p className="text-sm text-destructive -mb-2">Qualifying has begun and predictions are locked</p>
         ) : (
           <p className="text-sm text-muted-foreground -mb-2">
-            Qualifying begins {format(race.lockedAt, "EEEE do LLLL p")} and predictions will be locked in{" "}
-            {formatedDistance}
+            Qualifying begins{" "}
+            <strong title={format(race.lockedAt, "EEEE do LLLL p", { locale: sv })}>
+              {format(race.lockedAt, "EEEE do LLLL p")}
+            </strong>{" "}
+            and predictions will be locked in {formatedDistance}
           </p>
         )
       ) : null}
@@ -195,7 +199,9 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
         <div>
           <p className="text-xl">{race.name}</p>
           <p className="text-sm text-muted-foreground" suppressHydrationWarning>
-            {format(race.date, "EEEE do LLLL p")}
+            <strong title={format(race.date, "EEEE do LLLL p", { locale: sv })}>
+              {format(race.date, "EEEE do LLLL p")}
+            </strong>
           </p>
         </div>
         {raceLocked && <Lock size={24} />}
