@@ -1,6 +1,10 @@
 import { getNextRaceAndUsersPredictions } from "@/lib/api/races/queries";
 import { getRanksForUsersAndSeason } from "@/lib/api/seasonPoints/queries";
 
+// TODO: better styling for raceLocked state
+// TODO: show "will be recalculated at (race.date + 1 day)" maybe both in the in the predictions page (prio 1) and dashboard (prio 2)
+// TODO: first time calculated save the results in db, also second time calculated save the results in db
+
 export default async function Home() {
   const year = new Date().getFullYear();
   const ranks = await getRanksForUsersAndSeason(year);

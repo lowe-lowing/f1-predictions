@@ -17,8 +17,10 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { Label } from "@radix-ui/react-dropdown-menu";
+import { format, formatDistance } from "date-fns";
 import { Lock, X } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { DriverComponent } from "./DriverComponent";
 import SearchDriver from "./SearchDriver";
 
@@ -49,10 +51,31 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
   const [editing, setEditing] = useState(false);
 
   const formChanged = !selectedDrivers.every((driver, index) => driver?.id === initialSelected[index]?.id);
-  const raceLocked = race?.lockedAt ? race.lockedAt < new Date() : false;
+
+  const checkRaceLocked = (lockedAt: Date | undefined | null) => (lockedAt ? lockedAt < new Date() : false);
+  const raceLocked = checkRaceLocked(race.lockedAt);
+
+  const checkLocked = (lockedAt: Date | undefined | null) => {
+    const locked = checkRaceLocked(lockedAt);
+    if (locked) {
+      toast.error("Qualifying has begun and predictions are locked");
+    }
+    return locked;
+  };
+
+  const checkLockedAndCancel = (lockedAt: Date | undefined | null) => {
+    const locked = checkRaceLocked(lockedAt);
+    if (locked) {
+      handleCancel();
+      toast.error("Qualifying has begun and predictions are locked");
+    }
+    return locked;
+  };
 
   // select driver, add to selected drivers and remove from available drivers
   const selectDriver = (driver: Driver, index: number) => {
+    if (checkLockedAndCancel(race.lockedAt)) return;
+
     const existingDriver = selectedDrivers[index];
     let newAvailableDrivers = availableDrivers.filter((d) => d.id !== driver.id);
     if (existingDriver) {
@@ -66,6 +89,8 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
 
   // deselect driver, add back to available drivers and set selected driver to null
   const deselectDriver = (index: number) => () => {
+    if (checkLockedAndCancel(race.lockedAt)) return;
+
     const driver = selectedDrivers[index];
     if (driver) {
       const newDrivers = [...selectedDrivers];
@@ -76,6 +101,8 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
   };
 
   const onSubmit = async (_: any, formData: FormData) => {
+    if (checkLockedAndCancel(race.lockedAt)) return;
+
     if (prediction) {
       await updatePredictionAction({
         id: prediction.id,
@@ -100,11 +127,24 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
     return;
   };
 
+  const handleEdit = () => {
+    if (checkLocked(race.lockedAt)) return;
+    setEditing(true);
+  };
+
+  const handleCancel = () => {
+    setSelectedDrivers(initialSelected);
+    setAvailableDrivers(initialDrivers);
+    setEditing(false);
+  };
+
   const [state, formAction] = useActionState(onSubmit, initialState);
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const handleDrop = (event: DragEndEvent) => {
+    if (checkLockedAndCancel(race.lockedAt)) return;
+
     const { over, active } = event;
     if (!over) return;
     const index = over.id as number;
@@ -135,24 +175,32 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
     })
   );
 
+  const formatedDistance = formatDistance(race.lockedAt || new Date(), new Date(), {
+    includeSeconds: true,
+  });
+
   return (
     <form action={formAction} className="space-y-4">
-      {raceLocked && <p className="text-sm text-destructive -mb-2">Qualifying has begun and predictions are locked</p>}
+      {race.lockedAt ? (
+        raceLocked ? (
+          <p className="text-sm text-destructive -mb-2">Qualifying has begun and predictions are locked</p>
+        ) : (
+          <p className="text-sm text-muted-foreground -mb-2">
+            Qualifying begins {format(race.lockedAt, "EEEE do LLLL p")} and predictions will be locked in{" "}
+            {formatedDistance}
+          </p>
+        )
+      ) : null}
       <div className="flex items-center gap-2">
         <div>
           <p className="text-xl">{race.name}</p>
           <p className="text-sm text-muted-foreground" suppressHydrationWarning>
-            {race.date.toLocaleString()}
+            {format(race.date, "EEEE do LLLL p")}
           </p>
         </div>
         {raceLocked && <Lock size={24} />}
         {prediction && !raceLocked && (
-          <Button
-            className={cn({ invisible: editing })}
-            type="button"
-            onClick={() => setEditing(true)}
-            variant={"secondary"}
-          >
+          <Button className={cn({ invisible: editing })} type="button" onClick={handleEdit} variant={"secondary"}>
             Edit
           </Button>
         )}
@@ -215,15 +263,7 @@ export default function PredictionForm({ drivers, race, prediction }: CreatePred
           <>
             <div className="space-x-2">
               <FormLoadingButton disabled={!formChanged}>Update Prediction</FormLoadingButton>
-              <Button
-                type="button"
-                variant={"ghost"}
-                onClick={() => {
-                  setEditing(false);
-                  setSelectedDrivers(initialSelected);
-                  setAvailableDrivers(initialDrivers);
-                }}
-              >
+              <Button type="button" variant={"ghost"} onClick={handleCancel}>
                 Cancel
               </Button>
             </div>
@@ -265,7 +305,6 @@ const Draggable = ({ children, index, setDraggedIndex, ...props }: DraggableProp
 interface DroppableProps extends React.HTMLAttributes<HTMLDivElement> {
   index: number;
 }
-
 export function Droppable({ index, className, ...props }: DroppableProps) {
   const { isOver, setNodeRef } = useDroppable({
     id: index,

@@ -44,6 +44,19 @@ export const getPredictionsFull = async () => {
   const pos4Point = alias(pointHistory, "pos4Point");
   const pos5Point = alias(pointHistory, "pos5Point");
 
+  type PosDrivers = typeof pos1Driver | typeof pos2Driver | typeof pos3Driver | typeof pos4Driver | typeof pos5Driver;
+  type PosPoints = typeof pos1Point | typeof pos2Point | typeof pos3Point | typeof pos4Point | typeof pos5Point;
+
+  const posDriver = (driver: PosDrivers, point: PosPoints, position: number) => ({
+    id: driver.id,
+    name: driver.name,
+    image: driver.image,
+    team: driver.team,
+    points: sql<number>`
+        (CASE WHEN ${point.driverId} IS NOT NULL THEN 1 ELSE 0 END) +
+        (CASE WHEN ${point.pointForPosition} = ${position} THEN 1 ELSE 0 END)`,
+  });
+
   const rows = await db
     .selectDistinctOn([predictions.id], {
       id: predictions.id,
@@ -51,51 +64,11 @@ export const getPredictionsFull = async () => {
         id: races.id,
         name: races.name,
       },
-      pos1Driver: {
-        id: pos1Driver.id,
-        name: pos1Driver.name,
-        image: pos1Driver.image,
-        team: pos1Driver.team,
-        points: sql<number>`
-        (CASE WHEN ${pos1Point.driverId} IS NOT NULL THEN 1 ELSE 0 END) +
-        (CASE WHEN ${pos1Point.pointForPosition} = 1 THEN 1 ELSE 0 END)`,
-      },
-      pos2Driver: {
-        id: pos2Driver.id,
-        name: pos2Driver.name,
-        image: pos2Driver.image,
-        team: pos2Driver.team,
-        points: sql<number>`
-        (CASE WHEN ${pos2Point.driverId} IS NOT NULL THEN 1 ELSE 0 END) +
-        (CASE WHEN ${pos2Point.pointForPosition} = 2 THEN 1 ELSE 0 END)`,
-      },
-      pos3Driver: {
-        id: pos3Driver.id,
-        name: pos3Driver.name,
-        image: pos3Driver.image,
-        team: pos3Driver.team,
-        points: sql<number>`
-        (CASE WHEN ${pos3Point.driverId} IS NOT NULL THEN 1 ELSE 0 END) +
-        (CASE WHEN ${pos3Point.pointForPosition} = 3 THEN 1 ELSE 0 END)`,
-      },
-      pos4Driver: {
-        id: pos4Driver.id,
-        name: pos4Driver.name,
-        image: pos4Driver.image,
-        team: pos4Driver.team,
-        points: sql<number>`
-        (CASE WHEN ${pos4Point.driverId} IS NOT NULL THEN 1 ELSE 0 END) +
-        (CASE WHEN ${pos4Point.pointForPosition} = 4 THEN 1 ELSE 0 END)`,
-      },
-      pos5Driver: {
-        id: pos5Driver.id,
-        name: pos5Driver.name,
-        image: pos5Driver.image,
-        team: pos5Driver.team,
-        points: sql<number>`
-        (CASE WHEN ${pos5Point.driverId} IS NOT NULL THEN 1 ELSE 0 END) +
-        (CASE WHEN ${pos5Point.pointForPosition} = 5 THEN 1 ELSE 0 END)`,
-      },
+      pos1Driver: posDriver(pos1Driver, pos1Point, 1),
+      pos2Driver: posDriver(pos2Driver, pos2Point, 2),
+      pos3Driver: posDriver(pos3Driver, pos3Point, 3),
+      pos4Driver: posDriver(pos4Driver, pos4Point, 4),
+      pos5Driver: posDriver(pos5Driver, pos5Point, 5),
     })
     .from(predictions)
     .where(eq(predictions.userId, session?.user.id!))
