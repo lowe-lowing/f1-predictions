@@ -1,0 +1,1 @@
+ALTER TABLE "races" ADD COLUMN "circuit_img" text;

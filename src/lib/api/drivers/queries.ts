@@ -8,6 +8,12 @@ export const getDrivers = async () => {
   return { drivers: d };
 };
 
+export const getDriversBySeason = async (season: number) => {
+  const rows = await db.select().from(drivers).where(eq(drivers.season, season));
+  const d = rows;
+  return { drivers: d };
+};
+
 export const getDriversOrderedByTeamBySeason = async (season: number) => {
   const rows = await db.select().from(drivers).where(eq(drivers.season, season)).orderBy(drivers.team);
   const d = rows;
