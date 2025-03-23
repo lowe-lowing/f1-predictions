@@ -1,15 +1,13 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { getDriverById } from "@/lib/api/drivers/queries";
 import OptimisticDriver from "./OptimisticDriver";
 
-import { BackButton } from "@/components/shared/BackButton";
 import Loading from "@/app/loading";
+import { BackButton } from "@/components/shared/BackButton";
 import { getCanEditDrivers } from "@/lib/api/userPermissions/queries";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ChevronLeftIcon } from "lucide-react";
+import DriverBackButton from "@/app/(app)/driver/[driverId]/DriverBackButton";
 
 export const revalidate = 0;
 
@@ -32,11 +30,7 @@ const Driver = async ({ id }: { id: string }) => {
     <Suspense fallback={<Loading />}>
       <div className="relative">
         {/* <BackButton currentResource="drivers" /> */}
-        <Button variant={"ghost"} asChild>
-          <Link href={"/drivers/2025"}>
-            <ChevronLeftIcon />
-          </Link>
-        </Button>
+        <DriverBackButton />
         <OptimisticDriver driver={driver} canEdit={canEdit} />
       </div>
     </Suspense>

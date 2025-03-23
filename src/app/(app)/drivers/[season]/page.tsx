@@ -9,16 +9,7 @@ export const revalidate = 0;
 
 export default async function DriversPage({ params }: { params: Promise<{ season: string }> }) {
   const { season } = await params;
-  return (
-    // <main>
-    //   <div className="relative space-y-4">
-    //     <div className="flex justify-between">
-    //       <h1 className="font-semibold text-2xl my-2">Drivers</h1>
-    //     </div>
-    //   </div>
-    // </main>
-    <Drivers season={season} />
-  );
+  return <Drivers season={season} />;
 }
 
 const Drivers = async ({ season }: { season: string }) => {

@@ -59,8 +59,8 @@ const Driver = ({ driver, openModal }: { driver: CompleteDriver; openModal: TOpe
   const optimistic = driver.id === "optimistic";
   const deleting = driver.id === "delete";
   const mutating = optimistic || deleting;
-  const pathname = usePathname();
-  const basePath = pathname.includes("drivers") ? pathname : pathname + "/drivers/";
+  // const pathname = usePathname();
+  // const basePath = pathname.includes("drivers") ? pathname : pathname + "/drivers/";
 
   return (
     <li
