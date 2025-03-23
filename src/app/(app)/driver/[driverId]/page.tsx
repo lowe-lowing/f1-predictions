@@ -7,6 +7,9 @@ import OptimisticDriver from "./OptimisticDriver";
 import { BackButton } from "@/components/shared/BackButton";
 import Loading from "@/app/loading";
 import { getCanEditDrivers } from "@/lib/api/userPermissions/queries";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronLeftIcon } from "lucide-react";
 
 export const revalidate = 0;
 
@@ -28,7 +31,12 @@ const Driver = async ({ id }: { id: string }) => {
   return (
     <Suspense fallback={<Loading />}>
       <div className="relative">
-        <BackButton currentResource="drivers" />
+        {/* <BackButton currentResource="drivers" /> */}
+        <Button variant={"ghost"} asChild>
+          <Link href={"/drivers/2025"}>
+            <ChevronLeftIcon />
+          </Link>
+        </Button>
         <OptimisticDriver driver={driver} canEdit={canEdit} />
       </div>
     </Suspense>

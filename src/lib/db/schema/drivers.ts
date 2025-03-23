@@ -6,14 +6,17 @@ import { z } from "zod";
 import { type getDrivers } from "@/lib/api/drivers/queries";
 
 import { nanoid, timestamps } from "@/lib/utils";
+import { seasonPointIdSchema } from "@/lib/db/schema/seasonPoints";
 
-
-export const drivers = pgTable('drivers', {
-  id: varchar("id", { length: 191 }).primaryKey().$defaultFn(() => nanoid()),
-  number: integer("number"),
+export const drivers = pgTable("drivers", {
+  id: varchar("id", { length: 191 })
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
   name: varchar("name", { length: 256 }).notNull(),
+  number: integer("number"),
   image: text("image"),
   team: varchar("team", { length: 256 }),
+  season: integer("season"),
 
   createdAt: timestamp("created_at")
     .notNull()
@@ -21,24 +24,26 @@ export const drivers = pgTable('drivers', {
   updatedAt: timestamp("updated_at")
     .notNull()
     .default(sql`now()`),
-
 });
-
 
 // Schema for drivers - used to validate API requests
-const baseSchema = createSelectSchema(drivers).omit(timestamps)
+const baseSchema = createSelectSchema(drivers).omit(timestamps);
 
 export const insertDriverSchema = createInsertSchema(drivers).omit(timestamps);
-export const insertDriverParams = baseSchema.extend({
-  number: z.coerce.number()
-}).omit({
-  id: true
-});
+export const insertDriverParams = baseSchema
+  .extend({
+    number: z.coerce.number(),
+    season: z.coerce.number(),
+  })
+  .omit({
+    id: true,
+  });
 
 export const updateDriverSchema = baseSchema;
 export const updateDriverParams = baseSchema.extend({
-  number: z.coerce.number()
-})
+  number: z.coerce.number(),
+  season: z.coerce.number(),
+});
 export const driverIdSchema = baseSchema.pick({ id: true });
 
 // Types for drivers - used to type API request params and within Components
@@ -50,4 +55,3 @@ export type DriverId = z.infer<typeof driverIdSchema>["id"];
 
 // this type infers the return from getDrivers() - meaning it will include any joins
 export type CompleteDriver = Awaited<ReturnType<typeof getDrivers>>["drivers"][number];
-

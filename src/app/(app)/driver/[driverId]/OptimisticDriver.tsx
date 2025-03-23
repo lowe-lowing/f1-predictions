@@ -1,6 +1,6 @@
 "use client";
 
-import { TAddOptimistic } from "@/app/(app)/drivers/useOptimisticDrivers";
+import { TAddOptimistic } from "@/app/(app)/drivers/[season]/useOptimisticDrivers";
 import { type Driver } from "@/lib/db/schema/drivers";
 import { cn } from "@/lib/utils";
 import { useOptimistic, useState } from "react";

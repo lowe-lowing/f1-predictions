@@ -19,7 +19,7 @@ export const additionalLinks: AdditionalLinks[] = [
     title: "Entities",
     links: [
       {
-        href: "/drivers",
+        href: "/drivers/2025",
         title: "Drivers",
         icon: CarFront,
       },

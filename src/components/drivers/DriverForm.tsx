@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useValidatedForm } from "@/lib/hooks/useValidatedForm";
 
 import { type Action, cn } from "@/lib/utils";
-import { type TAddOptimistic } from "@/app/(app)/drivers/useOptimisticDrivers";
+import { type TAddOptimistic } from "@/app/(app)/drivers/[season]/useOptimisticDrivers";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -141,6 +141,16 @@ const DriverForm = ({
           defaultValue={driver?.team ?? ""}
         />
         {errors?.team ? <p className="text-xs text-destructive mt-2">{errors.team[0]}</p> : <div className="h-6" />}
+      </div>
+      <div>
+        <Label className={cn("mb-2 inline-block", errors?.season ? "text-destructive" : "")}>Season</Label>
+        <Input
+          type="text"
+          name="season"
+          className={cn(errors?.season ? "ring ring-destructive" : "")}
+          defaultValue={driver?.season ?? ""}
+        />
+        {errors?.season ? <p className="text-xs text-destructive mt-2">{errors.season[0]}</p> : <div className="h-6" />}
       </div>
       {/* Schema fields end */}
 
