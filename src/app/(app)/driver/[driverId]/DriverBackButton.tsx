@@ -4,13 +4,13 @@ import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouteHistory } from "@/lib/context/RouteHistoryContext";
-import { seasons } from "@/app/(app)/drivers/layout";
+import { seasons } from "@/lib/utils";
 
 export function useBackPath() {
   const { previousRoute } = useRouteHistory();
   if (previousRoute) {
     const segments = previousRoute.split("/");
-    if (segments[1] === "drivers" && seasons.includes(parseInt(segments[2]))) {
+    if (segments[1] === "drivers" && seasons.includes(Number(segments[2]))) {
       return previousRoute;
     }
   }

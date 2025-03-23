@@ -1,8 +1,7 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { seasons } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-
-export const seasons = [2025, 2024];
 
 export default function RootLayout({
   children,
