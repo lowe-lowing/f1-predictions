@@ -13,6 +13,7 @@ races.response.forEach(async (race: any) => {
     country: race.competition.location.country,
     city: race.competition.location.city,
     circuit: race.circuit.name,
+    circuitImg: race.circuit.image,
     season: race.season,
     date: new Date(race.date),
     lockedAt: null,

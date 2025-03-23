@@ -1,6 +1,6 @@
 "use client";
 
-import { TAddOptimistic } from "@/app/(app)/drivers/useOptimisticDrivers";
+import { TAddOptimistic } from "@/app/(app)/drivers/[season]/useOptimisticDrivers";
 import { type Driver } from "@/lib/db/schema/drivers";
 import { cn } from "@/lib/utils";
 import { useOptimistic, useState } from "react";
@@ -31,7 +31,9 @@ export default function OptimisticDriver({ driver, canEdit }: { driver: Driver; 
         />
       </Modal>
       <div className="flex justify-between items-end mb-4">
-        <h1 className="font-semibold text-2xl">{optimisticDriver.name}</h1>
+        <h1 className="font-semibold text-2xl">
+          {optimisticDriver.name} <span className="text-muted-foreground">({optimisticDriver.season})</span>
+        </h1>
         <Button className="" onClick={() => setOpen(true)}>
           Edit
         </Button>
@@ -60,8 +62,8 @@ const BigDriverComponent = ({ driver }: { driver: Driver }) => {
         </div>
       </div>
       <div className="text-xs text-muted-foreground">
-        <p>Created at: {new Date(driver.createdAt).toLocaleString()}</p>
-        <p>Updated at: {new Date(driver.updatedAt).toLocaleString()}</p>
+        <p>Created at: {new Date(driver.createdAt).toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" })}</p>
+        <p>Updated at: {new Date(driver.updatedAt).toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" })}</p>
       </div>
     </div>
   );

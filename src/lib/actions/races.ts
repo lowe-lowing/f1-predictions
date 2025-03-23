@@ -1,11 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import {
-  createRace,
-  deleteRace,
-  updateRace,
-} from "@/lib/api/races/mutations";
+import { createRace, deleteRace, updateRace } from "@/lib/api/races/mutations";
 import {
   RaceId,
   NewRaceParams,
@@ -14,6 +10,7 @@ import {
   insertRaceParams,
   updateRaceParams,
 } from "@/lib/db/schema/races";
+import { getRacesByYear } from "@/lib/api/races/queries";
 
 const handleErrors = (e: unknown) => {
   const errMsg = "Error, please try again.";
@@ -55,4 +52,8 @@ export const deleteRaceAction = async (input: RaceId) => {
   } catch (e) {
     return handleErrors(e);
   }
+};
+
+export const getRacesByYearAction = async (year: number) => {
+  return await getRacesByYear(year);
 };

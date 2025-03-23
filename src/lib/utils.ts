@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+export const seasons = [2025, 2024];
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

@@ -18,6 +18,7 @@ export const races = pgTable(
     country: varchar("country", { length: 256 }).notNull(),
     city: varchar("city", { length: 256 }).notNull(),
     circuit: text("circuit").notNull(),
+    circuitImg: text("circuit_img"),
     season: integer("season").notNull(),
     date: timestamp("date").notNull(),
     lockedAt: timestamp("locked_at"),
