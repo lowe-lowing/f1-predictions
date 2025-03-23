@@ -21,3 +21,10 @@ export const getDriverById = async (id: DriverId) => {
   const d = row;
   return { driver: d };
 };
+
+export const getDriverByNumber = async (number: number) => {
+  const [row] = await db.select().from(drivers).where(eq(drivers.number, number));
+  if (row === undefined) return {};
+  const d = row;
+  return { driver: d };
+};

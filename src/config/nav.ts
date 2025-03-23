@@ -9,7 +9,7 @@ type AdditionalLinks = {
 export const defaultLinks: SidebarLink[] = [
   { href: "/dashboard", title: "Home", icon: HomeIcon },
   { href: "/predictions", title: "Your Predictions", icon: List },
-  { href: "/top5explorer", title: "Top 5 Explorer", icon: Trophy },
+  { href: "/result-explorer", title: "Result Explorer", icon: Trophy },
   { href: "/account", title: "Account", icon: User },
   { href: "/settings", title: "Settings", icon: Cog },
 ];

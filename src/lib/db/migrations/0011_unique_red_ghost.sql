@@ -1,0 +1,1 @@
+DROP INDEX "race_result_race_id_idx";

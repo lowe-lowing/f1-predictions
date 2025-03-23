@@ -1,21 +1,22 @@
-import { getRacesForYear } from "@/lib/api/F1Actions";
+import { getRacesByYearAction } from "@/lib/actions/races";
+import { Race } from "@/lib/db/schema/races";
 import { Dispatch, useEffect, useState, type FC } from "react";
 
 interface ViewRacesForYearProps {
   year: number;
-  setSelectedRace: Dispatch<any>;
+  setSelectedRace: Dispatch<Race>;
 }
 
 const ViewRacesForYear: FC<ViewRacesForYearProps> = ({ year, setSelectedRace }) => {
-  const [races, setRaces] = useState<any[]>([]);
+  const [races, setRaces] = useState<Race[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setRaces([]);
-      const res = await getRacesForYear(year);
-      setRaces(res);
+      const { races } = await getRacesByYearAction(year);
+      setRaces(races);
       setIsLoading(false);
     };
     fetchData();
@@ -30,17 +31,17 @@ const ViewRacesForYear: FC<ViewRacesForYearProps> = ({ year, setSelectedRace }) 
             setSelectedRace(race);
             setRaces([]);
           }}
-          key={race.meeting_key}
+          key={race.id}
           className="bg-secondary p-4 rounded-sm shadow-sm cursor-pointer"
         >
           <p>
-            <strong>Name:</strong> {race.meeting_name}
+            <strong>Name:</strong> {race.name}
           </p>
           <p>
-            <strong>Circuit:</strong> {race.circuit_short_name}
+            <strong>Circuit:</strong> {race.circuit}
           </p>
           <p>
-            <strong>Date start:</strong> {race.date_start}
+            <strong>Date start:</strong> {race.date.toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" })}
           </p>
         </div>
       ))}
