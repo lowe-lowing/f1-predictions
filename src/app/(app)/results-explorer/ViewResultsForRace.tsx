@@ -47,7 +47,7 @@ const ViewResultsForRace: FC<ViewResultsForRaceProps> = ({ race }) => {
           </div>
         ))
       ) : (
-        <p>No results found</p>
+        <p>No results yet</p>
       )}
     </div>
   );
