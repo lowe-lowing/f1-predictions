@@ -73,16 +73,52 @@ export const getPredictionsFull = async () => {
     .from(predictions)
     .where(eq(predictions.userId, session?.user.id!))
     .innerJoin(races, eq(predictions.raceId, races.id))
+    .innerJoin(seasonPoints, and(eq(seasonPoints.userId, session?.user.id!), eq(seasonPoints.year, races.season)))
     .leftJoin(pos1Driver, eq(pos1Driver.id, predictions.pos1DriverId))
     .leftJoin(pos2Driver, eq(pos2Driver.id, predictions.pos2DriverId))
     .leftJoin(pos3Driver, eq(pos3Driver.id, predictions.pos3DriverId))
     .leftJoin(pos4Driver, eq(pos4Driver.id, predictions.pos4DriverId))
     .leftJoin(pos5Driver, eq(pos5Driver.id, predictions.pos5DriverId))
-    .leftJoin(pos1Point, and(eq(pos1Point.raceId, races.id), eq(pos1Point.driverId, pos1Driver.id)))
-    .leftJoin(pos2Point, and(eq(pos2Point.raceId, races.id), eq(pos2Point.driverId, pos2Driver.id)))
-    .leftJoin(pos3Point, and(eq(pos3Point.raceId, races.id), eq(pos3Point.driverId, pos3Driver.id)))
-    .leftJoin(pos4Point, and(eq(pos4Point.raceId, races.id), eq(pos4Point.driverId, pos4Driver.id)))
-    .leftJoin(pos5Point, and(eq(pos5Point.raceId, races.id), eq(pos5Point.driverId, pos5Driver.id)));
+    .leftJoin(
+      pos1Point,
+      and(
+        eq(pos1Point.seasonPointId, seasonPoints.id),
+        eq(pos1Point.raceId, races.id),
+        eq(pos1Point.driverId, pos1Driver.id)
+      )
+    )
+    .leftJoin(
+      pos2Point,
+      and(
+        eq(pos2Point.seasonPointId, seasonPoints.id),
+        eq(pos2Point.raceId, races.id),
+        eq(pos2Point.driverId, pos2Driver.id)
+      )
+    )
+    .leftJoin(
+      pos3Point,
+      and(
+        eq(pos3Point.seasonPointId, seasonPoints.id),
+        eq(pos3Point.raceId, races.id),
+        eq(pos3Point.driverId, pos3Driver.id)
+      )
+    )
+    .leftJoin(
+      pos4Point,
+      and(
+        eq(pos4Point.seasonPointId, seasonPoints.id),
+        eq(pos4Point.raceId, races.id),
+        eq(pos4Point.driverId, pos4Driver.id)
+      )
+    )
+    .leftJoin(
+      pos5Point,
+      and(
+        eq(pos5Point.seasonPointId, seasonPoints.id),
+        eq(pos5Point.raceId, races.id),
+        eq(pos5Point.driverId, pos5Driver.id)
+      )
+    );
 
   const p = rows;
   return { predictions: p };
