@@ -73,7 +73,6 @@ export const getPredictionsFull = async () => {
     .from(predictions)
     .where(eq(predictions.userId, session?.user.id!))
     .innerJoin(races, eq(predictions.raceId, races.id))
-    .innerJoin(seasonPoints, and(eq(seasonPoints.userId, session?.user.id!), eq(seasonPoints.year, races.season)))
     .leftJoin(pos1Driver, eq(pos1Driver.id, predictions.pos1DriverId))
     .leftJoin(pos2Driver, eq(pos2Driver.id, predictions.pos2DriverId))
     .leftJoin(pos3Driver, eq(pos3Driver.id, predictions.pos3DriverId))
