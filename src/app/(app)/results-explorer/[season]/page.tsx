@@ -13,7 +13,7 @@ export default async function ResultsExplorerPage({ params }: { params: Promise<
   const { races } = await getRacesByYearAction(parseInt(season));
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-4">
       {races.map((race) => (
         <Link
           key={race.id}

@@ -7,7 +7,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <main>
-      <div className="relative space-y-4">
+      <div className="relative">
         <SeasonPicker title="Results" path="results-explorer" />
         {children}
       </div>
