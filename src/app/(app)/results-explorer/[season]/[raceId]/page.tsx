@@ -29,19 +29,23 @@ export default async function RaceResultsPage({ params }: { params: Promise<{ ra
         </h2>
       </div>
       <div className="space-y-4">
-        {raceResults.map(({ id, position, driver, ...data }) => (
-          <div key={id} className="bg-secondary p-3 rounded-sm shadow-sm">
-            <div className="grid gap-2 items-center grid-cols-12">
-              <div className="flex items-center gap-2 col-span-full sm:col-span-7 lg:col-span-5 xl:col-span-4">
-                <Label className="text-2xl w-10 sm:w-14 text-center">{position}</Label>
-                {driver && <DriverComponent driver={driver} />}
+        {raceResults.length > 0 ? (
+          raceResults.map(({ id, position, driver, ...data }) => (
+            <div key={id} className="bg-secondary p-3 rounded-sm shadow-sm">
+              <div className="grid gap-2 items-center grid-cols-12">
+                <div className="flex items-center gap-2 col-span-full sm:col-span-7 lg:col-span-5 xl:col-span-4">
+                  <Label className="text-2xl w-10 sm:w-14 text-center">{position}</Label>
+                  {driver && <DriverComponent driver={driver} />}
+                </div>
+                <p className="col-span-full sm:col-span-5 lg:col-span-3 xl:col-span-3">Time: {data.time}</p>
+                <p className="col-span-6 sm:col-start-2 lg:col-span-2 xl:col-span-3">Laps: {data.laps}</p>
+                <p className="col-span-6 sm:col-span-5 lg:col-span-2 xl:col-span-2">Grid: {data.grid}</p>
               </div>
-              <p className="col-span-full sm:col-span-5 lg:col-span-3 xl:col-span-3">Time: {data.time}</p>
-              <p className="col-span-6 sm:col-start-2 lg:col-span-2 xl:col-span-3">Laps: {data.laps}</p>
-              <p className="col-span-6 sm:col-span-5 lg:col-span-2 xl:col-span-2">Grid: {data.grid}</p>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No results yet</p>
+        )}
       </div>
     </div>
   );
