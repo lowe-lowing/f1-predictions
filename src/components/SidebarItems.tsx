@@ -54,14 +54,13 @@ const SidebarLinkGroup = ({
           const isAllowed = link.onlyFor ? session?.user?.email === link.onlyFor : true;
           if (!isAllowed) return null;
           let active = pathname === link.href;
-          // special case for /drivers/[season]
-          if (pathname === "/drivers" && link.href.includes("/drivers")) {
-            active = true;
+
+          const specialCases = ["/drivers", "/results-explorer"];
+          const specialCase = specialCases.find((c) => link.href.startsWith(c));
+          if (specialCase) {
+            active = fullPathname.startsWith(specialCase);
           }
-          // special case for /results-explorer/[season]
-          if (pathname === "/results-explorer" && link.href.includes("/results-explorer")) {
-            active = true;
-          }
+
           return (
             <li key={link.title}>
               <SidebarLink link={link} active={active} />
