@@ -5,7 +5,6 @@ import { getDriverById } from "@/lib/api/drivers/queries";
 import OptimisticDriver from "./OptimisticDriver";
 
 import Loading from "@/app/loading";
-import { BackButton } from "@/components/shared/BackButton";
 import { getCanEditDrivers } from "@/lib/api/userPermissions/queries";
 import DriverBackButton from "@/app/(app)/driver/[driverId]/DriverBackButton";
 
@@ -29,7 +28,6 @@ const Driver = async ({ id }: { id: string }) => {
   return (
     <Suspense fallback={<Loading />}>
       <div className="relative">
-        {/* <BackButton currentResource="drivers" /> */}
         <DriverBackButton />
         <OptimisticDriver driver={driver} canEdit={canEdit} />
       </div>

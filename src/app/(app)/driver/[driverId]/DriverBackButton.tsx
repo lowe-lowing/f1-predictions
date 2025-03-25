@@ -19,7 +19,6 @@ export function useBackPath() {
 
 export default function DriverBackButton() {
   const backPath = useBackPath();
-  console.log(backPath);
 
   return (
     <Button variant={"ghost"} asChild>

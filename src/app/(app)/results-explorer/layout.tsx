@@ -8,7 +8,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <main>
       <div className="relative space-y-4">
-        <SeasonPicker title="Drivers" path="drivers" />
+        <SeasonPicker title="Results" path="results-explorer" />
         {children}
       </div>
     </main>

@@ -31,9 +31,10 @@ export default function OptimisticDriver({ driver, canEdit }: { driver: Driver; 
         />
       </Modal>
       <div className="flex justify-between items-end mb-4">
-        <h1 className="font-semibold text-2xl">
-          {optimisticDriver.name} <span className="text-muted-foreground">({optimisticDriver.season})</span>
-        </h1>
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:gap-2">
+          <h1 className="font-semibold text-2xl">{optimisticDriver.name}</h1>
+          <p className="text-muted-foreground">({optimisticDriver.season})</p>
+        </div>
         <Button className="" onClick={() => setOpen(true)}>
           Edit
         </Button>

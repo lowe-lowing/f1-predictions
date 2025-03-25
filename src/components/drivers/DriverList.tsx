@@ -37,7 +37,7 @@ export default function DriverList({ drivers, canEdit }: { drivers: CompleteDriv
           closeModal={closeModal}
         />
       </Modal>
-      <div className="absolute right-0 top-0 ">
+      <div className="absolute right-0 top-0 mt-0.5 ">
         <Button onClick={() => openModal()} variant={"outline"}>
           +
         </Button>

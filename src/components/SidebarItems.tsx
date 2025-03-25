@@ -53,9 +53,18 @@ const SidebarLinkGroup = ({
         {links.map((link) => {
           const isAllowed = link.onlyFor ? session?.user?.email === link.onlyFor : true;
           if (!isAllowed) return null;
+          let active = pathname === link.href;
+          // special case for /drivers/[season]
+          if (pathname === "/drivers" && link.href.includes("/drivers")) {
+            active = true;
+          }
+          // special case for /results-explorer/[season]
+          if (pathname === "/results-explorer" && link.href.includes("/results-explorer")) {
+            active = true;
+          }
           return (
             <li key={link.title}>
-              <SidebarLink link={link} active={pathname === link.href} />
+              <SidebarLink link={link} active={active} />
             </li>
           );
         })}
