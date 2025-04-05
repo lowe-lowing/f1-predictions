@@ -1,12 +1,11 @@
 import { sql } from "drizzle-orm";
-import { integer, varchar, text, timestamp, pgTable } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
 import { type getDrivers } from "@/lib/api/drivers/queries";
 
 import { nanoid, timestamps } from "@/lib/utils";
-import { seasonPointIdSchema } from "@/lib/db/schema/seasonPoints";
 
 export const drivers = pgTable("drivers", {
   id: varchar("id", { length: 191 })
@@ -17,6 +16,7 @@ export const drivers = pgTable("drivers", {
   image: text("image"),
   team: varchar("team", { length: 256 }),
   season: integer("season"),
+  active: boolean("active").notNull().default(false),
 
   createdAt: timestamp("created_at")
     .notNull()
@@ -34,6 +34,7 @@ export const insertDriverParams = baseSchema
   .extend({
     number: z.coerce.number(),
     season: z.coerce.number(),
+    active: z.coerce.boolean().default(false),
   })
   .omit({
     id: true,

@@ -16,6 +16,7 @@ import { useBackPath } from "@/components/shared/BackButton";
 
 import { type Driver, insertDriverParams } from "@/lib/db/schema/drivers";
 import { createDriverAction, deleteDriverAction, updateDriverAction } from "@/lib/actions/drivers";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const DriverForm = ({
   driver,
@@ -151,6 +152,17 @@ const DriverForm = ({
           defaultValue={driver?.season ?? ""}
         />
         {errors?.season ? <p className="text-xs text-destructive mt-2">{errors.season[0]}</p> : <div className="h-6" />}
+      </div>
+
+      {/* active - boolean - checkbox */}
+      <div className="flex flex-col gap-2">
+        <Label className={cn("mb-2 inline-block", errors?.active ? "text-destructive" : "")}>Active</Label>
+        <Checkbox
+          name="active"
+          className={cn(errors?.active ? "ring ring-destructive" : "")}
+          defaultChecked={driver?.active ?? false}
+        />
+        {errors?.active ? <p className="text-xs text-destructive mt-2">{errors.active[0]}</p> : <div className="h-6" />}
       </div>
       {/* Schema fields end */}
 

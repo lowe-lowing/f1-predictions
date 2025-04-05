@@ -1,0 +1,1 @@
+ALTER TABLE "drivers" ALTER COLUMN "active" SET NOT NULL;

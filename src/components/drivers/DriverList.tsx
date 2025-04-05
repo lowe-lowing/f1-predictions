@@ -71,7 +71,7 @@ const Driver = ({ driver, openModal }: { driver: CompleteDriver; openModal: TOpe
       )}
     >
       <div className="w-full">
-        <DriverComponent driver={driver} />
+        <DriverComponent driver={driver} className={cn({ "opacity-70": !driver.active })} />
       </div>
       <Button variant={"link"} asChild>
         <Link href={"/driver/" + driver.id}>Edit</Link>

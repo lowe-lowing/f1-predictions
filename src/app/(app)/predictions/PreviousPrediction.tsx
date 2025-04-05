@@ -24,12 +24,12 @@ const PreviousPrediction: FC<PreviousPredictionProps> = ({ prediction }) => {
       <p className="text-xl">{prediction.race.name}</p>
       <p>Points gained: {points}</p>
       {entries.map(([key, value]) => (
-        <div key={key} className="flex gap-2 items-center">
-          <Label className="w-10">{key}</Label>
+        <div key={key} className="flex items-center">
+          <Label className="w-10 sm:w-14 text-center">{key}</Label>
           {value && (
             <>
               <DriverComponent driver={value} />
-              {value.points > 0 && <p>+{value.points}</p>}
+              {value.points > 0 && <p className="ml-2">+{value.points}</p>}
             </>
           )}
         </div>

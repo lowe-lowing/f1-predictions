@@ -9,7 +9,10 @@ export const getDrivers = async () => {
 };
 
 export const getDriversBySeason = async (season: number) => {
-  const rows = await db.select().from(drivers).where(eq(drivers.season, season));
+  const rows = await db
+    .select()
+    .from(drivers)
+    .where(and(eq(drivers.season, season), eq(drivers.active, true)));
   const d = rows;
   return { drivers: d };
 };
