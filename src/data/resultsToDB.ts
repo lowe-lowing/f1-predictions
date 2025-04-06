@@ -63,6 +63,7 @@ async function insertResultsByRaceId(raceId: string, dbId: string, season: numbe
         image: result.driver.image,
         team: result.team.name,
         season,
+        active: false,
       });
       console.log(`Driver created: ${createdDriver.name}`);
 

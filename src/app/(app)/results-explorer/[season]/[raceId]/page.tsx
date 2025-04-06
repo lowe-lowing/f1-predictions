@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import Link from "next/link";
 
+// maybe only cache the data instead of the whole page?
 export default async function RaceResultsPage({ params }: { params: Promise<{ raceId: string }> }) {
   cacheLife("days");
   const { raceId } = await params;
