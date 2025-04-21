@@ -5,7 +5,7 @@ import { pointHistory } from "@/lib/db/schema/pointHistory";
 import { type PredictionId, predictionIdSchema, predictions } from "@/lib/db/schema/predictions";
 import { races } from "@/lib/db/schema/races";
 import { seasonPoints } from "@/lib/db/schema/seasonPoints";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, sql, desc, asc } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 export const getPredictions = async () => {
@@ -118,7 +118,8 @@ export const getPredictionsFull = async () => {
         eq(pos5Point.raceId, races.id),
         eq(pos5Point.driverId, pos5Driver.id)
       )
-    );
+    )
+    .orderBy(desc(predictions.id));
 
   const p = rows;
   return { predictions: p };
