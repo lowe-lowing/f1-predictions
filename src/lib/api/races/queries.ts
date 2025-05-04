@@ -36,6 +36,7 @@ export const getNextRace = async () => {
 
 export const getNextRaceAndUsersPredictions = async () => {
   const today = new Date();
+  today.setHours(new Date().getHours() - 3);
   const [nextRace] = await db.select().from(races).where(gte(races.date, today)).orderBy(asc(races.date)).limit(1);
   if (nextRace === undefined) return {};
 
