@@ -63,6 +63,7 @@ export const getPredictionsFull = async () => {
       race: {
         id: races.id,
         name: races.name,
+        date: races.date,
       },
       pos1Driver: posDriver(pos1Driver, pos1Point, 1),
       pos2Driver: posDriver(pos2Driver, pos2Point, 2),
@@ -119,8 +120,10 @@ export const getPredictionsFull = async () => {
         eq(pos5Point.driverId, pos5Driver.id)
       )
     )
-    .orderBy(desc(predictions.id));
+    .orderBy(predictions.id);
 
-  const p = rows;
+  const sortedByDate = rows.sort((a, b) => b.race.date.getTime() - a.race.date.getTime());
+
+  const p = sortedByDate;
   return { predictions: p };
 };
