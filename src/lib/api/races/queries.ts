@@ -34,6 +34,9 @@ export const getNextRace = async () => {
   return { nextRace: r };
 };
 
+type GetNextRaceAndUsersPredictionsType = Awaited<ReturnType<typeof getNextRaceAndUsersPredictions>>;
+export type RacePrediction = NonNullable<GetNextRaceAndUsersPredictionsType["racePredictions"]>[number];
+
 export const getNextRaceAndUsersPredictions = async () => {
   const today = new Date();
   today.setHours(new Date().getHours() - 3);

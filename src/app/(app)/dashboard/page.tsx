@@ -1,3 +1,4 @@
+import PendingPrediction from "@/app/(app)/predictions/PendingPrediction";
 import { getNextRaceAndUsersPredictions } from "@/lib/api/races/queries";
 import { getRanksForUsersAndSeason } from "@/lib/api/seasonPoints/queries";
 
@@ -34,18 +35,9 @@ export default async function Home() {
           </p>
           <p className="mb-4">Here are all predictions:</p>
           {racePredictions.length > 0 ? (
-            <div className="space-y-4">
+            <div className="flex flex-wrap gap-6">
               {racePredictions.map((p) => (
-                <div key={p.predictions.id} className="space-y-2">
-                  <p>{p.user.name}</p>
-                  <div>
-                    <p>1st: {p.pos1Driver?.name}</p>
-                    <p>2nd: {p.pos2Driver?.name}</p>
-                    <p>3rd: {p.pos3Driver?.name}</p>
-                    <p>4th: {p.pos4Driver?.name}</p>
-                    <p>5th: {p.pos5Driver?.name}</p>
-                  </div>
-                </div>
+                <PendingPrediction key={p.predictions.id} prediction={p} />
               ))}
             </div>
           ) : (
@@ -53,12 +45,6 @@ export default async function Home() {
           )}
         </div>
       )}
-      {/* <pre className="bg-secondary p-4 rounded-sm shadow-sm text-secondary-foreground break-all whitespace-break-spaces">
-        {JSON.stringify(nextRace, null, 2)}
-      </pre> */}
-      {/* <pre className="bg-secondary p-4 rounded-sm shadow-sm text-secondary-foreground break-all whitespace-break-spaces">
-        {JSON.stringify(racePredictions, null, 2)}
-      </pre> */}
     </div>
   );
 }
