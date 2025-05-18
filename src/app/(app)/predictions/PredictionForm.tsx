@@ -34,7 +34,7 @@ interface CreatePredictionFormProps {
   prediction?: PredictionFull;
 }
 
-// TODO: improve the readability of this component, take some ideas from chatgpt
+// TODO: improve the code readability of this component, take some ideas from chatgpt
 export default function PredictionForm({ drivers, race, prediction }: CreatePredictionFormProps) {
   const predictedDriverIds = [
     prediction?.pos1Driver?.id || null,

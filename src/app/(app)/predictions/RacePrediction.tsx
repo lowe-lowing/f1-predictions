@@ -3,11 +3,11 @@ import { Label } from "@/components/ui/label";
 import { PredictionFull } from "@/lib/api/predictions/queries";
 import { type FC } from "react";
 
-interface PreviousPredictionProps {
+interface RacePredictionProps {
   prediction: PredictionFull;
 }
 
-const PreviousPrediction: FC<PreviousPredictionProps> = ({ prediction }) => {
+const RacePrediction: FC<RacePredictionProps> = ({ prediction }) => {
   const positions = {
     "1st": prediction.pos1Driver,
     "2nd": prediction.pos2Driver,
@@ -38,4 +38,4 @@ const PreviousPrediction: FC<PreviousPredictionProps> = ({ prediction }) => {
   );
 };
 
-export default PreviousPrediction;
+export default RacePrediction;

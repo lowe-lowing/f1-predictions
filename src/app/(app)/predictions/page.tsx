@@ -1,5 +1,5 @@
 import PredictionForm from "@/app/(app)/predictions/PredictionForm";
-import PreviousPrediction from "@/app/(app)/predictions/PreviousPrediction";
+import RacePrediction from "@/app/(app)/predictions/RacePrediction";
 import { getDriversBySeason } from "@/lib/api/drivers/queries";
 import { getPredictionsFull } from "@/lib/api/predictions/queries";
 import { getNextRace } from "@/lib/api/races/queries";
@@ -30,7 +30,7 @@ export default async function Predictions() {
         <div className="py-8 space-y-4">
           <p>Your previous predictions</p>
           {previousPredictions.map((prediction) => (
-            <PreviousPrediction key={prediction.id} prediction={prediction} />
+            <RacePrediction key={prediction.id} prediction={prediction} />
           ))}
         </div>
       )}

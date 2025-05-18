@@ -21,7 +21,7 @@ export async function getTop5ForRace(meetingKey: number) {
     }
   });
 
-  // TODO get the driver data from the database but if the driver is not found, get it from the API and add it to the database
+  // Get the driver data from the database but if the driver is not found, get it from the API and add it to the database
   // Maybe have a seperate server that syncs all races, results, drivers, and calculates points
   // need to make a function to set a driver as disqualified and recalculate points
   const driverPromises = driverArr.map(async (driver) => {
