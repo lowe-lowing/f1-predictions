@@ -21,9 +21,9 @@ const UserPrediction: FC<UserPredictionProps> = ({ prediction }) => {
 
   return (
     <div key={prediction.id} className="space-y-2">
-      <p className="text-xl ml-16 underline">{prediction.userName}</p>
+      <p className="text-xl ml-11 sm:ml-16 underline">{prediction.userName}</p>
       {/* TODO: add a property race.pointsCalculatedAt to be able to only show points when they have been calculated and then show points: 0 if dogshit */}
-      {points > 0 && <p className="ml-16">Points gained: {points}</p>}
+      {points > 0 && <p className="ml-11 sm:ml-16">Points gained: {points}</p>}
       {entries.map(([key, value]) => (
         <div key={key} className="flex items-center">
           <Label className="w-10 sm:w-14 text-center">{key}</Label>
