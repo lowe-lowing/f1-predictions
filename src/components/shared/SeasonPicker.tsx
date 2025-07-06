@@ -21,7 +21,7 @@ export default function SeasonPicker({ title, path }: SeasonPickerProps) {
     <div className="flex justify-between">
       <div className="flex items-center gap-3 sm:gap-4">
         <h1 className="font-semibold text-xl sm:text-2xl my-2">{title}</h1>
-        <Tabs defaultValue={season} className="w-[400px]">
+        <Tabs defaultValue={season}>
           <TabsList>
             {seasons.map((season) => (
               <Link key={season} href={`/${path}/${season}`}>
