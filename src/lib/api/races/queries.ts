@@ -1,5 +1,5 @@
 import { db } from "@/lib/db/index";
-import { eq, gte, asc, and, sql } from "drizzle-orm";
+import { eq, gte, asc, and, sql, lte, desc } from "drizzle-orm";
 import { type RaceId, raceIdSchema, races } from "@/lib/db/schema/races";
 import { predictions } from "@/lib/db/schema/predictions";
 import { alias } from "drizzle-orm/pg-core";
@@ -41,8 +41,7 @@ export type RacePrediction = NonNullable<GetNextRaceAndUsersPredictionsType["rac
 
 export const getNextRaceAndUsersPredictions = async () => {
   const today = new Date();
-  today.setHours(new Date().getHours() - 3);
-  const [nextRace] = await db.select().from(races).where(gte(races.date, today)).orderBy(asc(races.date)).limit(1);
+  const [nextRace] = await db.select().from(races).where(lte(races.lockedAt, today)).orderBy(desc(races.date)).limit(1);
   if (nextRace === undefined) return {};
 
   const pos1Driver = alias(drivers, "pos1Driver");

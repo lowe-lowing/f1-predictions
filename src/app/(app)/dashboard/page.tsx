@@ -1,6 +1,8 @@
 import UserPrediction from "@/app/(app)/predictions/UserPrediction";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getNextRaceAndUsersPredictions } from "@/lib/api/races/queries";
 import { getRanksForUsersAndSeason } from "@/lib/api/seasonPoints/queries";
+import Link from "next/link";
 
 // TODO: show "will be recalculated at (race.date + 1 day)" maybe both in the predictions page (prio 1) and dashboard (prio 2)
 // first time calculated save the results in db, also second time calculated save the results in db (as of now results are only saved at recalculation)
@@ -11,7 +13,7 @@ export default async function Home() {
 
   const { nextRace, racePredictions } = await getNextRaceAndUsersPredictions();
 
-  const raceLocked = nextRace?.lockedAt ? nextRace.lockedAt < new Date() : false;
+  const raceLocked = nextRace?.lockedAt ? nextRace.lockedAt <= new Date() : false;
 
   return (
     <div>
@@ -29,7 +31,17 @@ export default async function Home() {
 
       {nextRace && raceLocked && (
         <div className="mt-16">
-          <p className="mb-6 text-2xl">Predictions and Points:</p>
+          <p className="mb-6 text-2xl">
+            Predictions and Points for{" "}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href={`/results-explorer/${nextRace.season}/${nextRace.id}`}>
+                  <strong>{nextRace.name}</strong>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>View Results</TooltipContent>
+            </Tooltip>
+          </p>
           {racePredictions.length > 0 ? (
             <div className="flex flex-wrap gap-6">
               {racePredictions.map((prediction) => (
