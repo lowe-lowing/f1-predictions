@@ -2,6 +2,7 @@ import { createRace } from "@/lib/api/races/mutations";
 import fs from "fs";
 import { resolve } from "path";
 
+// races2026.json fetched from https://api-formula-1.p.rapidapi.com/races?season=2026&type=race
 const file = fs.readFileSync(resolve(__dirname, "./races2026.json"), { encoding: "utf-8" });
 const races = JSON.parse(file);
 

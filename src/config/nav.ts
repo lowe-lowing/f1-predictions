@@ -9,7 +9,7 @@ type AdditionalLinks = {
 export const defaultLinks: SidebarLink[] = [
   { href: "/dashboard", title: "Home", icon: HomeIcon },
   { href: "/predictions", title: "Your Predictions", icon: List },
-  { href: "/results-explorer/2025", title: "Results Explorer", icon: Trophy },
+  { href: "/results-explorer/2026", title: "Results Explorer", icon: Trophy },
   { href: "/account", title: "Account", icon: User },
   { href: "/settings", title: "Settings", icon: Cog },
 ];
@@ -19,7 +19,7 @@ export const additionalLinks: AdditionalLinks[] = [
     title: "Entities",
     links: [
       {
-        href: "/drivers/2025",
+        href: "/drivers/2026",
         title: "Drivers",
         icon: CarFront,
       },
