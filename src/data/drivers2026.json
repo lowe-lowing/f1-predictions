@@ -1,0 +1,428 @@
+{
+    "get": "rankings",
+    "parameters": {
+        "season": "2026"
+    },
+    "errors": [],
+    "results": 22,
+    "response": [
+        {
+            "position": 0,
+            "driver": {
+                "id": 4,
+                "name": "Fernando Alonso",
+                "abbr": "ALO",
+                "number": 14,
+                "image": "https://media.api-sports.io/formula-1/drivers/4.png"
+            },
+            "team": {
+                "id": 17,
+                "name": "Aston Martin F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/17.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 20,
+                "name": "Lewis Hamilton",
+                "abbr": "HAM",
+                "number": 44,
+                "image": "https://media.api-sports.io/formula-1/drivers/20.png"
+            },
+            "team": {
+                "id": 3,
+                "name": "Scuderia Ferrari",
+                "logo": "https://media.api-sports.io/formula-1/teams/3.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 6,
+                "name": "Nico Hulkenberg",
+                "abbr": "HUL",
+                "number": 27,
+                "image": "https://media.api-sports.io/formula-1/drivers/6.png"
+            },
+            "team": {
+                "id": 20,
+                "name": "Audi Revolut F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/20.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 25,
+                "name": "Max Verstappen",
+                "abbr": "VER",
+                "number": 3,
+                "image": "https://media.api-sports.io/formula-1/drivers/25.png"
+            },
+            "team": {
+                "id": 1,
+                "name": "Red Bull Racing",
+                "logo": "https://media.api-sports.io/formula-1/teams/1.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 28,
+                "name": "Esteban Ocon",
+                "abbr": "OCO",
+                "number": 31,
+                "image": "https://media.api-sports.io/formula-1/drivers/28.png"
+            },
+            "team": {
+                "id": 14,
+                "name": "Haas F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/14.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 24,
+                "name": "Carlos Sainz Jr",
+                "abbr": "SAI",
+                "number": 55,
+                "image": "https://media.api-sports.io/formula-1/drivers/24.png"
+            },
+            "team": {
+                "id": 12,
+                "name": "Williams F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/12.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 31,
+                "name": "Lance Stroll",
+                "abbr": "STR",
+                "number": 18,
+                "image": "https://media.api-sports.io/formula-1/drivers/31.png"
+            },
+            "team": {
+                "id": 17,
+                "name": "Aston Martin F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/17.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 36,
+                "name": "Pierre Gasly",
+                "abbr": "GAS",
+                "number": 10,
+                "image": "https://media.api-sports.io/formula-1/drivers/36.png"
+            },
+            "team": {
+                "id": 13,
+                "name": "Alpine F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/13.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 34,
+                "name": "Charles Leclerc",
+                "abbr": "LEC",
+                "number": 16,
+                "image": "https://media.api-sports.io/formula-1/drivers/34.png"
+            },
+            "team": {
+                "id": 3,
+                "name": "Scuderia Ferrari",
+                "logo": "https://media.api-sports.io/formula-1/teams/3.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 51,
+                "name": "George Russell",
+                "abbr": "RUS",
+                "number": 63,
+                "image": "https://media.api-sports.io/formula-1/drivers/51.png"
+            },
+            "team": {
+                "id": 5,
+                "name": "Mercedes-AMG Petronas",
+                "logo": "https://media.api-sports.io/formula-1/teams/5.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 49,
+                "name": "Lando Norris",
+                "abbr": "NOR",
+                "number": 1,
+                "image": "https://media.api-sports.io/formula-1/drivers/49.png"
+            },
+            "team": {
+                "id": 2,
+                "name": "McLaren Racing",
+                "logo": "https://media.api-sports.io/formula-1/teams/2.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 50,
+                "name": "Alexander Albon",
+                "abbr": "ALB",
+                "number": 23,
+                "image": "https://media.api-sports.io/formula-1/drivers/50.png"
+            },
+            "team": {
+                "id": 12,
+                "name": "Williams F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/12.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 89,
+                "name": "Liam Lawson",
+                "abbr": "LAW",
+                "number": 30,
+                "image": "https://media.api-sports.io/formula-1/drivers/89.png"
+            },
+            "team": {
+                "id": 7,
+                "name": "Racing Bulls",
+                "logo": "https://media.api-sports.io/formula-1/teams/7.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 105,
+                "name": "Franco Colapinto",
+                "abbr": null,
+                "number": 43,
+                "image": "https://media.api-sports.io/formula-1/drivers/105.png"
+            },
+            "team": {
+                "id": 13,
+                "name": "Alpine F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/13.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 97,
+                "name": "Oscar Piastri",
+                "abbr": "PIA",
+                "number": 81,
+                "image": "https://media.api-sports.io/formula-1/drivers/97.png"
+            },
+            "team": {
+                "id": 2,
+                "name": "McLaren Racing",
+                "logo": "https://media.api-sports.io/formula-1/teams/2.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 101,
+                "name": "Oliver Bearman",
+                "abbr": "BEA",
+                "number": 87,
+                "image": "https://media.api-sports.io/formula-1/drivers/101.png"
+            },
+            "team": {
+                "id": 14,
+                "name": "Haas F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/14.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 100,
+                "name": "Isack Hadjar",
+                "abbr": "HAD",
+                "number": 6,
+                "image": "https://media.api-sports.io/formula-1/drivers/100.png"
+            },
+            "team": {
+                "id": 1,
+                "name": "Red Bull Racing",
+                "logo": "https://media.api-sports.io/formula-1/teams/1.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 106,
+                "name": "Andrea Kimi Antonelli",
+                "abbr": "ANT",
+                "number": 12,
+                "image": "https://media.api-sports.io/formula-1/drivers/106.png"
+            },
+            "team": {
+                "id": 5,
+                "name": "Mercedes-AMG Petronas",
+                "logo": "https://media.api-sports.io/formula-1/teams/5.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 110,
+                "name": "Gabriel Bortoleto",
+                "abbr": "BOR",
+                "number": 5,
+                "image": "https://media.api-sports.io/formula-1/drivers/110.png"
+            },
+            "team": {
+                "id": 20,
+                "name": "Audi Revolut F1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/20.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 114,
+                "name": "Arvid Lindblad",
+                "abbr": null,
+                "number": 41,
+                "image": "https://media.api-sports.io/formula-1/drivers/114.png"
+            },
+            "team": {
+                "id": 7,
+                "name": "Racing Bulls",
+                "logo": "https://media.api-sports.io/formula-1/teams/7.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 10,
+                "name": "Sergio Perez",
+                "abbr": "PER",
+                "number": 11,
+                "image": "https://media.api-sports.io/formula-1/drivers/10.png"
+            },
+            "team": {
+                "id": 19,
+                "name": "Cadillac Formula 1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/19.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        },
+        {
+            "position": 0,
+            "driver": {
+                "id": 5,
+                "name": "Valtteri Bottas",
+                "abbr": "BOT",
+                "number": 77,
+                "image": "https://media.api-sports.io/formula-1/drivers/5.png"
+            },
+            "team": {
+                "id": 19,
+                "name": "Cadillac Formula 1 Team",
+                "logo": "https://media.api-sports.io/formula-1/teams/19.png"
+            },
+            "points": null,
+            "wins": 0,
+            "behind": null,
+            "season": 2026
+        }
+    ]
+}

@@ -2,7 +2,7 @@ import { createRace } from "@/lib/api/races/mutations";
 import fs from "fs";
 import { resolve } from "path";
 
-const file = fs.readFileSync(resolve(__dirname, "./races2025.json"), { encoding: "utf-8" });
+const file = fs.readFileSync(resolve(__dirname, "./races2026.json"), { encoding: "utf-8" });
 const races = JSON.parse(file);
 
 races.response.forEach(async (race: any) => {
