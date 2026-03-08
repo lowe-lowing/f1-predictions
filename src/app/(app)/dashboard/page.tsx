@@ -1,6 +1,6 @@
 import UserPrediction from "@/app/(app)/predictions/UserPrediction";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { getNextRaceAndUsersPredictions } from "@/lib/api/races/queries";
+import { getNextRaceAndUsersPredictions, RacePrediction } from "@/lib/api/races/queries";
 import { getRanksForUsersAndSeason } from "@/lib/api/seasonPoints/queries";
 import Link from "next/link";
 
@@ -44,9 +44,11 @@ export default async function Home() {
           </p>
           {racePredictions.length > 0 ? (
             <div className="flex flex-wrap gap-6">
-              {racePredictions.map((prediction) => (
-                <UserPrediction key={prediction.id} prediction={prediction} />
-              ))}
+              {racePredictions
+                .sort((a, b) => sumPoints(b) - sumPoints(a))
+                .map((prediction) => (
+                  <UserPrediction key={prediction.id} prediction={prediction} />
+                ))}
             </div>
           ) : (
             <p>No predictions found</p>
@@ -56,3 +58,13 @@ export default async function Home() {
     </div>
   );
 }
+
+const sumPoints = (prediction: RacePrediction) => {
+  return [
+    prediction.pos1Driver,
+    prediction.pos2Driver,
+    prediction.pos3Driver,
+    prediction.pos4Driver,
+    prediction.pos5Driver,
+  ].reduce((acc, driver) => acc + (driver ? driver.points : 0), 0);
+};
