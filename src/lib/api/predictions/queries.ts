@@ -64,6 +64,7 @@ export const getPredictionsFull = async () => {
         id: races.id,
         name: races.name,
         date: races.date,
+        season: races.season,
       },
       pos1Driver: posDriver(pos1Driver, pos1Point, 1),
       pos2Driver: posDriver(pos2Driver, pos2Point, 2),
