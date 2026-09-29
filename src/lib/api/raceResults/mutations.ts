@@ -10,10 +10,24 @@ import {
   raceResultIdSchema 
 } from "@/lib/db/schema/raceResults";
 
+// Upserts on (raceId, driverId) so importing a race's results again replaces them instead of duplicating
 export const createRaceResult = async (raceResult: NewRaceResultParams) => {
   const newRaceResult = insertRaceResultSchema.parse(raceResult);
   try {
-    const [r] =  await db.insert(raceResults).values(newRaceResult).returning();
+    const [r] = await db
+      .insert(raceResults)
+      .values(newRaceResult)
+      .onConflictDoUpdate({
+        target: [raceResults.raceId, raceResults.driverId],
+        set: {
+          position: newRaceResult.position,
+          time: newRaceResult.time,
+          laps: newRaceResult.laps,
+          grid: newRaceResult.grid,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
     return { raceResult: r };
   } catch (err) {
     const message = (err as Error).message ?? "Error, please try again";

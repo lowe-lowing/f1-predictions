@@ -29,7 +29,10 @@ export const raceResults = pgTable("race_results", {
   updatedAt: timestamp("updated_at")
     .notNull()
     .default(sql`now()`),
-});
+}, (raceResults) => ({
+  // One result per driver per race; re-imports update the existing row (see createRaceResult)
+  raceDriverIndex: uniqueIndex("race_results_race_driver_idx").on(raceResults.raceId, raceResults.driverId),
+}));
 
 // Schema for raceResults - used to validate API requests
 const baseSchema = createSelectSchema(raceResults).omit(timestamps);
