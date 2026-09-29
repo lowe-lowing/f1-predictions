@@ -276,7 +276,7 @@ const RaceHeader = ({ race, locked }: { race: Race; locked: boolean }) => (
   </CardHeader>
 );
 
-const LockStatus = ({ lockedAt, locked }: { lockedAt: Date | null; locked: boolean }) => {
+export const LockStatus = ({ lockedAt, locked }: { lockedAt: Date | null; locked: boolean }) => {
   if (!lockedAt) return null;
   if (locked) {
     return (

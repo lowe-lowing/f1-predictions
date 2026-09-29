@@ -72,6 +72,7 @@ export const getNextRaceAndUsersPredictions = async () => {
   const racePredictions = await db
     .selectDistinctOn([predictions.id], {
       id: predictions.id,
+      userId: users.id,
       userName: users.name,
       pos1Driver: posDriver(pos1Driver, pos1Point, 1),
       pos2Driver: posDriver(pos2Driver, pos2Point, 2),
