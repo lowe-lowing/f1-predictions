@@ -1,10 +1,13 @@
 "use cache";
-import { DriverComponent } from "@/app/(app)/predictions/DriverComponent";
+import { DriverAvatar, PositionBadge } from "@/app/(app)/predictions/positions";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import { getRaceResultsByRaceIdAction } from "@/lib/actions/raceResults";
+import { RaceResultsWithDriver } from "@/lib/api/raceResults/queries";
 import { getRaceById } from "@/lib/api/races/queries";
-import { ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { ArrowDown, ArrowLeft, ArrowUp, CalendarDays, Flag, MapPin } from "lucide-react";
 import { unstable_cacheLife as cacheLife } from "next/cache";
 import Link from "next/link";
 
@@ -13,41 +16,187 @@ export default async function RaceResultsPage({ params }: { params: Promise<{ ra
   cacheLife("days");
   const { raceId } = await params;
   const { race } = await getRaceById(raceId);
-  if (!race) return <p>Race not found</p>;
+  if (!race) return <p className="pt-4">Race not found</p>;
   const { raceResults } = await getRaceResultsByRaceIdAction(raceId);
 
+  // Drivers without a classified position (DNF/DNS) come last
+  const classified = raceResults.filter((result) => result.position !== null);
+  const unclassified = raceResults.filter((result) => result.position === null);
+  const podium = classified.slice(0, 3);
+
   return (
-    <div>
-      <div className="flex items-center gap-2 py-2">
-        <Link href={`/results-explorer/${race.season}`}>
-          <Button variant={"ghost"} size={"icon"} className="[&_svg]:size-6">
-            <ArrowLeft />
-          </Button>
-        </Link>
-        <h2 className="text-xl font-bold">
-          <span className="text-muted-foreground">Results for</span> {race.name} -{" "}
-          {race.date.toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" })}
-        </h2>
-      </div>
-      <div className="space-y-4">
-        {raceResults.length > 0 ? (
-          raceResults.map(({ id, position, driver, ...data }) => (
-            <div key={id} className="bg-secondary p-3 rounded-sm shadow-sm">
-              <div className="grid gap-2 items-center grid-cols-12">
-                <div className="flex items-center gap-2 col-span-full sm:col-span-7 lg:col-span-5 xl:col-span-4">
-                  <Label className="text-2xl w-10 sm:w-14 text-center">{position}</Label>
-                  {driver && <DriverComponent driver={driver} />}
-                </div>
-                <p className="col-span-full sm:col-span-5 lg:col-span-3 xl:col-span-3">Time: {data.time}</p>
-                <p className="col-span-6 sm:col-start-2 lg:col-span-2 xl:col-span-3">Laps: {data.laps}</p>
-                <p className="col-span-6 sm:col-span-5 lg:col-span-2 xl:col-span-2">Grid: {data.grid}</p>
-              </div>
+    <div className="mx-auto max-w-5xl space-y-6 pt-4">
+      <Card className="overflow-hidden">
+        <div className="flex items-start justify-between gap-4 bg-muted/40 p-4 sm:p-6">
+          <div className="min-w-0 space-y-2">
+            <Button asChild variant="ghost" size="sm" className="-ml-3 h-8 text-muted-foreground">
+              <Link href={`/results-explorer/${race.season}`}>
+                <ArrowLeft className="h-4 w-4" /> All races
+              </Link>
+            </Button>
+            <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">{race.name}</h2>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="h-4 w-4" />
+                {race.circuit} · {race.city}, {race.country}
+              </span>
+              <span className="inline-flex items-center gap-1.5" suppressHydrationWarning>
+                <CalendarDays className="h-4 w-4" />
+                {format(race.date, "EEE d MMM yyyy, HH:mm")}
+              </span>
             </div>
-          ))
-        ) : (
-          <p>No results yet</p>
-        )}
-      </div>
+          </div>
+          {race.circuitImg && (
+            <img
+              src={race.circuitImg}
+              alt={`${race.circuit} layout`}
+              className="hidden h-24 w-auto shrink-0 opacity-80 dark:invert sm:block"
+            />
+          )}
+        </div>
+      </Card>
+
+      {raceResults.length === 0 ? (
+        <Card className="flex flex-col items-center gap-2 p-10 text-center">
+          <Flag className="h-8 w-8 text-muted-foreground" />
+          <p className="font-semibold">No results yet</p>
+          <p className="text-sm text-muted-foreground">Results show up here once the race has finished.</p>
+        </Card>
+      ) : (
+        <>
+          {podium.length > 0 && <Podium results={podium} />}
+          <Classification results={[...classified, ...unclassified]} />
+        </>
+      )}
     </div>
   );
 }
+
+// Order the podium 2-1-3 on wider screens so the winner sits in the middle
+const podiumOrder = ["sm:order-2", "sm:order-1", "sm:order-3"];
+const podiumHeights = ["", "sm:mt-6", "sm:mt-10"];
+
+const Podium = ({ results }: { results: RaceResultsWithDriver[] }) => (
+  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-start">
+    {results.map((result, index) => (
+      <Card
+        key={result.id}
+        className={cn(
+          "flex items-center gap-3 p-4 sm:flex-col sm:text-center",
+          podiumOrder[index],
+          podiumHeights[index],
+          index === 0 && "ring-2 ring-amber-400",
+        )}
+      >
+        <PositionBadge index={index} className="sm:order-last" />
+        <DriverAvatar
+          image={result.driver?.image ?? null}
+          name={result.driver?.name ?? null}
+          className={cn("h-12 w-12", index === 0 && "sm:h-20 sm:w-20")}
+        />
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-semibold">{result.driver?.name ?? "Unknown driver"}</p>
+          <p className="truncate text-xs text-muted-foreground">{result.driver?.team}</p>
+          {result.time && <p className="mt-1 text-sm tabular-nums">{result.time}</p>}
+        </div>
+      </Card>
+    ))}
+  </div>
+);
+
+const Classification = ({ results }: { results: RaceResultsWithDriver[] }) => {
+  // Older results were imported without grid positions
+  const hasGrid = results.some((result) => result.grid);
+  const columns = hasGrid ? "sm:grid-cols-[3rem_1fr_4.5rem_3.5rem_7rem]" : "sm:grid-cols-[3rem_1fr_3.5rem_7rem]";
+
+  return (
+    <section className="space-y-3">
+      <h3 className="text-lg font-semibold">Classification</h3>
+      <Card className="overflow-hidden">
+        <div
+          className={cn(
+            "hidden gap-3 border-b bg-muted/40 px-4 py-2 text-xs uppercase tracking-wider text-muted-foreground sm:grid",
+            columns,
+          )}
+        >
+          <span>Pos</span>
+          <span>Driver</span>
+          {hasGrid && <span className="text-right">Grid</span>}
+          <span className="text-right">Laps</span>
+          <span className="text-right">Time</span>
+        </div>
+        <ol className="divide-y">
+          {results.map((result) => (
+            <li
+              key={result.id}
+              className={cn("grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 px-4 py-2.5", columns)}
+            >
+              {result.position !== null ? (
+                <PositionBadge
+                  index={result.position - 1}
+                  className={cn("h-6 w-9 text-xs", result.position > 3 && "bg-muted text-muted-foreground")}
+                />
+              ) : (
+                <span className="w-9 text-center text-sm text-muted-foreground">–</span>
+              )}
+              <div className="flex min-w-0 items-center gap-2.5">
+                <DriverAvatar
+                  image={result.driver?.image ?? null}
+                  name={result.driver?.name ?? null}
+                  className="h-8 w-8"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{result.driver?.name ?? "Unknown driver"}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {result.driver?.team}
+                    <span className="sm:hidden">
+                      {result.grid && ` · Grid ${result.grid}`}
+                      {result.laps !== null && ` · ${result.laps} laps`}
+                    </span>
+                  </p>
+                </div>
+              </div>
+              {hasGrid && (
+                <span className="hidden items-center justify-end gap-1.5 text-sm tabular-nums sm:flex">
+                  {result.grid ?? "–"}
+                  <GridDelta grid={result.grid} position={result.position} />
+                </span>
+              )}
+              <span className="hidden text-right text-sm tabular-nums text-muted-foreground sm:block">
+                {result.laps ?? "–"}
+              </span>
+              <span className="text-right text-sm tabular-nums">
+                <ResultTime result={result} />
+              </span>
+            </li>
+          ))}
+        </ol>
+      </Card>
+    </section>
+  );
+};
+
+const ResultTime = ({ result }: { result: RaceResultsWithDriver }) => {
+  const time = result.time ?? (result.position === null ? "DNF" : "–");
+  const retired = /^(DNF|DNS|DSQ)/i.test(time);
+  return <span className={cn(retired && "font-medium text-destructive dark:text-red-400")}>{time}</span>;
+};
+
+// Places gained or lost compared to the starting grid
+const GridDelta = ({ grid, position }: { grid: string | null; position: number | null }) => {
+  const start = grid ? parseInt(grid) : NaN;
+  if (position === null || isNaN(start) || start === position) return null;
+  const gained = start - position;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center text-xs font-medium",
+        gained > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400",
+      )}
+      title={`${Math.abs(gained)} places ${gained > 0 ? "gained" : "lost"}`}
+    >
+      {gained > 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+      {Math.abs(gained)}
+    </span>
+  );
+};
