@@ -8,8 +8,8 @@ type AdditionalLinks = {
 
 export const defaultLinks: SidebarLink[] = [
   { href: "/dashboard", title: "Home", icon: HomeIcon },
-  { href: "/predictions", title: "Your Predictions", icon: List },
-  { href: "/results-explorer/2026", title: "Results Explorer", icon: Trophy },
+  { href: "/predictions", title: "Your Predictions", shortTitle: "Predictions", icon: List },
+  { href: "/results-explorer/2026", title: "Results Explorer", shortTitle: "Results", icon: Trophy },
   { href: "/account", title: "Account", icon: User },
   { href: "/settings", title: "Settings", icon: Cog },
 ];
@@ -32,3 +32,6 @@ export const additionalLinks: AdditionalLinks[] = [
     ],
   },
 ];
+
+// Shown in the bottom tab bar on mobile; everything else lives in the "More" drawer
+export const mobileTabLinks: SidebarLink[] = defaultLinks.slice(0, 3);

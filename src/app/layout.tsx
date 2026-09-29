@@ -1,5 +1,5 @@
 import { ThemeProvider } from "@/components/ThemeProvider";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   title: "CoolClub F1 Predictions",
   description:
     "Set your predictions before each race for the top 5 drivers, and we will see who gets the most points in the end of the season.",
+};
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
