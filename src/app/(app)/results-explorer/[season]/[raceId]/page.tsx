@@ -23,6 +23,7 @@ export default async function RaceResultsPage({ params }: { params: Promise<{ ra
   const classified = raceResults.filter((result) => result.position !== null);
   const unclassified = raceResults.filter((result) => result.position === null);
   const podium = classified.slice(0, 3);
+  const winnerTime = classified[0]?.position === 1 ? classified[0].time : null;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 pt-4">
@@ -64,8 +65,8 @@ export default async function RaceResultsPage({ params }: { params: Promise<{ ra
         </Card>
       ) : (
         <>
-          {podium.length > 0 && <Podium results={podium} />}
-          <Classification results={[...classified, ...unclassified]} />
+          {podium.length > 0 && <Podium results={podium} winnerTime={winnerTime} />}
+          <Classification results={[...classified, ...unclassified]} winnerTime={winnerTime} />
         </>
       )}
     </div>
@@ -76,7 +77,7 @@ export default async function RaceResultsPage({ params }: { params: Promise<{ ra
 const podiumOrder = ["sm:order-2", "sm:order-1", "sm:order-3"];
 const podiumHeights = ["", "sm:mt-6", "sm:mt-10"];
 
-const Podium = ({ results }: { results: RaceResultsWithDriver[] }) => (
+const Podium = ({ results, winnerTime }: { results: RaceResultsWithDriver[]; winnerTime: string | null }) => (
   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-start">
     {results.map((result, index) => (
       <Card
@@ -97,21 +98,25 @@ const Podium = ({ results }: { results: RaceResultsWithDriver[] }) => (
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{result.driver?.name ?? "Unknown driver"}</p>
           <p className="truncate text-xs text-muted-foreground">{result.driver?.team}</p>
-          {result.time && <p className="mt-1 text-sm tabular-nums">{result.time}</p>}
+          {result.time && (
+            <p className="mt-1 text-sm tabular-nums">
+              <ResultTime result={result} winnerTime={winnerTime} />
+            </p>
+          )}
         </div>
       </Card>
     ))}
   </div>
 );
 
-const Classification = ({ results }: { results: RaceResultsWithDriver[] }) => {
+const Classification = ({ results, winnerTime }: { results: RaceResultsWithDriver[]; winnerTime: string | null }) => {
   // Older results were imported without grid positions
   const hasGrid = results.some((result) => result.grid);
   const columns = hasGrid ? "sm:grid-cols-[3rem_1fr_4.5rem_3.5rem_7rem]" : "sm:grid-cols-[3rem_1fr_3.5rem_7rem]";
 
   return (
     <section className="space-y-3">
-      <h3 className="text-lg font-semibold">Classification</h3>
+      <h3 className="text-lg font-semibold">Full results</h3>
       <Card className="overflow-hidden">
         <div
           className={cn(
@@ -166,7 +171,7 @@ const Classification = ({ results }: { results: RaceResultsWithDriver[] }) => {
                 {result.laps ?? "–"}
               </span>
               <span className="text-right text-sm tabular-nums">
-                <ResultTime result={result} />
+                <ResultTime result={result} winnerTime={winnerTime} showTotal />
               </span>
             </li>
           ))}
@@ -176,10 +181,50 @@ const Classification = ({ results }: { results: RaceResultsWithDriver[] }) => {
   );
 };
 
-const ResultTime = ({ result }: { result: RaceResultsWithDriver }) => {
+// The winner shows their race time, everyone else the gap to the winner. Newer imports store every driver's
+// full race time, older ones already store gaps ("+14.512"), and lapped/retired drivers have "+1 lap"/"DNF".
+const ResultTime = ({
+  result,
+  winnerTime,
+  showTotal = false,
+}: {
+  result: RaceResultsWithDriver;
+  winnerTime: string | null;
+  showTotal?: boolean;
+}) => {
   const time = result.time ?? (result.position === null ? "DNF" : "–");
-  const retired = /^(DNF|DNS|DSQ)/i.test(time);
-  return <span className={cn(retired && "font-medium text-destructive dark:text-red-400")}>{time}</span>;
+  if (/^(DNF|DNS|DSQ)/i.test(time)) {
+    return <span className="font-medium text-destructive dark:text-red-400">{time}</span>;
+  }
+  if (result.position === 1) return <span className="font-semibold">{time}</span>;
+
+  const gap = gapToWinner(time, winnerTime);
+  if (!gap) return <span>{time}</span>;
+  return (
+    <span className="inline-flex flex-col items-end leading-tight">
+      <span>{gap}</span>
+      {showTotal && <span className="text-xs text-muted-foreground">{time}</span>}
+    </span>
+  );
+};
+
+// "1:38:16.655" / "38:16.655" / "16.655" -> seconds
+const parseRaceTime = (time: string | null) => {
+  if (!time || !/^\d+(:\d{1,2}){0,2}(\.\d+)?$/.test(time)) return null;
+  return time.split(":").reduce((acc, part) => acc * 60 + parseFloat(part), 0);
+};
+
+const formatGap = (seconds: number) => {
+  if (seconds < 60) return `+${seconds.toFixed(3)}`;
+  const minutes = Math.floor(seconds / 60);
+  return `+${minutes}:${(seconds - minutes * 60).toFixed(3).padStart(6, "0")}`;
+};
+
+const gapToWinner = (time: string, winnerTime: string | null) => {
+  const seconds = parseRaceTime(time);
+  const winnerSeconds = parseRaceTime(winnerTime);
+  if (seconds === null || winnerSeconds === null || seconds < winnerSeconds) return null;
+  return formatGap(seconds - winnerSeconds);
 };
 
 // Places gained or lost compared to the starting grid
