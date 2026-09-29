@@ -9,9 +9,10 @@ import { DriverComponent } from "./DriverComponent";
 interface SearchDriverProps {
   drivers: Driver[];
   onSelect: (driver: Driver) => void;
+  autoFocus?: boolean;
 }
 
-export default function SearchDriver({ drivers, onSelect }: SearchDriverProps) {
+export default function SearchDriver({ drivers, onSelect, autoFocus }: SearchDriverProps) {
   const [input, setInput] = useState("");
 
   const commandRef = useRef(null);
@@ -21,10 +22,11 @@ export default function SearchDriver({ drivers, onSelect }: SearchDriverProps) {
 
   return (
     <div className="flex gap-2 items-center">
-      <Command className="relative max-w-lg overflow-visible rounded-lg border" ref={commandRef}>
+      <Command className="relative overflow-visible rounded-lg border" ref={commandRef}>
         <CommandInput
           className="border-none outline-none ring-0 focus:border-none focus:outline-none"
           placeholder="Search drivers..."
+          autoFocus={autoFocus}
           value={input}
           onValueChange={(value: string) => {
             setInput(value);

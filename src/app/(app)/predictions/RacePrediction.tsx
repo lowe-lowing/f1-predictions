@@ -1,40 +1,64 @@
-import { DriverComponent } from "@/app/(app)/predictions/DriverComponent";
-import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import { PredictionFull } from "@/lib/api/predictions/queries";
+import { format } from "date-fns";
 import { type FC } from "react";
+import { DriverAvatar, MAX_POINTS_PER_RACE, PointsMarker, PositionBadge } from "./positions";
 
 interface RacePredictionProps {
   prediction: PredictionFull;
 }
 
-const RacePrediction: FC<RacePredictionProps> = ({ prediction }) => {
-  const positions = {
-    "1st": prediction.pos1Driver,
-    "2nd": prediction.pos2Driver,
-    "3rd": prediction.pos3Driver,
-    "4th": prediction.pos4Driver,
-    "5th": prediction.pos5Driver,
-  } as Record<string, PredictionFull["pos1Driver"]>;
+export const predictionDrivers = (prediction: PredictionFull) => [
+  prediction.pos1Driver,
+  prediction.pos2Driver,
+  prediction.pos3Driver,
+  prediction.pos4Driver,
+  prediction.pos5Driver,
+];
 
-  const entries = Object.entries(positions);
-  const points = entries.reduce((acc, [key, value]) => (value ? acc + value.points : acc), 0);
+export const predictionPoints = (prediction: PredictionFull) =>
+  predictionDrivers(prediction).reduce((acc, driver) => acc + (driver?.points ?? 0), 0);
+
+const RacePrediction: FC<RacePredictionProps> = ({ prediction }) => {
+  const drivers = predictionDrivers(prediction);
+  const points = predictionPoints(prediction);
 
   return (
-    <div key={prediction.id} className="space-y-2">
-      <p className="text-xl">{prediction.race.name}</p>
-      <p>Points gained: {points}</p>
-      {entries.map(([key, value]) => (
-        <div key={key} className="flex items-center">
-          <Label className="w-10 sm:w-14 text-center">{key}</Label>
-          {value && (
-            <>
-              <DriverComponent driver={value} />
-              {value.points > 0 && <p className="ml-2">+{value.points}</p>}
-            </>
-          )}
+    <Card className="flex min-w-0 flex-col p-4">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="truncate font-semibold" title={prediction.race.name}>
+            {prediction.race.name}
+          </h3>
+          <p className="text-sm text-muted-foreground" suppressHydrationWarning>
+            {format(prediction.race.date, "d MMM yyyy")}
+          </p>
         </div>
-      ))}
-    </div>
+        <div className="shrink-0 text-right">
+          <p className="text-2xl font-semibold leading-none tabular-nums">{points}</p>
+          <p className="text-xs text-muted-foreground">of {MAX_POINTS_PER_RACE} pts</p>
+        </div>
+      </div>
+      <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-muted">
+        <div className="h-full rounded-full bg-primary" style={{ width: `${(points / MAX_POINTS_PER_RACE) * 100}%` }} />
+      </div>
+      <ol className="space-y-1.5">
+        {drivers.map((driver, index) => (
+          <li key={index} className="flex items-center gap-2.5">
+            <PositionBadge index={index} className="h-6 w-8 text-xs" />
+            {driver ? (
+              <>
+                <DriverAvatar image={driver.image} name={driver.name} className="h-7 w-7" />
+                <span className="min-w-0 flex-1 truncate text-sm">{driver.name}</span>
+                <PointsMarker points={driver.points} />
+              </>
+            ) : (
+              <span className="flex-1 text-sm text-muted-foreground">No pick</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </Card>
   );
 };
 

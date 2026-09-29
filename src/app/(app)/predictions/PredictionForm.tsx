@@ -1,6 +1,7 @@
 "use client";
 import FormLoadingButton from "@/components/FormLoadingButton";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { createPredictionAction, updatePredictionAction } from "@/lib/actions/predictions";
 import { PredictionFull } from "@/lib/api/predictions/queries";
 import { Driver } from "@/lib/db/schema/drivers";
@@ -9,6 +10,8 @@ import { cn } from "@/lib/utils";
 import {
   DndContext,
   DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
   MouseSensor,
   TouchSensor,
   useDraggable,
@@ -16,309 +19,375 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { format, formatDistance } from "date-fns";
-import { Lock, X } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
+import { format, formatDistanceToNow } from "date-fns";
+import { CalendarDays, Eraser, Lock, MapPin, Pencil, Timer, X } from "lucide-react";
+import { HTMLAttributes, ReactNode, Ref, useActionState, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { DriverComponent } from "./DriverComponent";
+import { DriverAvatar, PositionBadge } from "./positions";
 import SearchDriver from "./SearchDriver";
-import { sv } from "date-fns/locale";
 
-let initialState: void;
-const positions = ["1st", "2nd", "3rd", "4th", "5th"];
+type Slots = Array<Driver | null>;
 
-interface CreatePredictionFormProps {
+const SLOT_COUNT = 5;
+const LOCKED_MESSAGE = "Qualifying has begun and predictions are locked";
+
+interface PredictionFormProps {
   drivers: Driver[];
   race: Race;
   prediction?: PredictionFull;
 }
 
-// TODO: improve the code readability of this component, take some ideas from chatgpt
-export default function PredictionForm({ drivers, race, prediction }: CreatePredictionFormProps) {
-  const predictedDriverIds = [
-    prediction?.pos1Driver?.id || null,
-    prediction?.pos2Driver?.id || null,
-    prediction?.pos3Driver?.id || null,
-    prediction?.pos4Driver?.id || null,
-    prediction?.pos5Driver?.id || null,
-  ];
-  const initialDrivers = prediction
-    ? drivers.filter((driver) => !predictedDriverIds.includes(driver.id))
-    : [...drivers];
-  const initialSelected = predictedDriverIds.map((pd) => drivers.find((d) => pd == d.id) || null);
-  const [availableDrivers, setAvailableDrivers] = useState<Driver[]>(initialDrivers);
-  const [selectedDrivers, setSelectedDrivers] = useState<Array<Driver | null>>(initialSelected);
-  const [editing, setEditing] = useState(false);
+const isLocked = (lockedAt: Date | null) => (lockedAt ? lockedAt < new Date() : false);
 
-  const formChanged = !selectedDrivers.every((driver, index) => driver?.id === initialSelected[index]?.id);
+const nextEmptySlot = (slots: Slots, from: number) => {
+  for (let i = 1; i <= SLOT_COUNT; i++) {
+    const index = (from + i) % SLOT_COUNT;
+    if (!slots[index]) return index;
+  }
+  return null;
+};
 
-  const checkRaceLocked = (lockedAt: Date | undefined | null) => (lockedAt ? lockedAt < new Date() : false);
-  const raceLocked = checkRaceLocked(race.lockedAt);
+export default function PredictionForm({ drivers, race, prediction }: PredictionFormProps) {
+  const initialSlots = useMemo<Slots>(() => {
+    const ids = [
+      prediction?.pos1Driver?.id,
+      prediction?.pos2Driver?.id,
+      prediction?.pos3Driver?.id,
+      prediction?.pos4Driver?.id,
+      prediction?.pos5Driver?.id,
+    ];
+    return ids.map((id) => drivers.find((d) => d.id === id) ?? null);
+  }, [drivers, prediction]);
 
-  const checkLocked = (lockedAt: Date | undefined | null) => {
-    const locked = checkRaceLocked(lockedAt);
-    if (locked) {
-      toast.error("Qualifying has begun and predictions are locked");
-    }
-    return locked;
-  };
-
-  const checkLockedAndCancel = (lockedAt: Date | undefined | null) => {
-    const locked = checkRaceLocked(lockedAt);
-    if (locked) {
-      handleCancel();
-      toast.error("Qualifying has begun and predictions are locked");
-    }
-    return locked;
-  };
-
-  // select driver, add to selected drivers and remove from available drivers
-  const selectDriver = (driver: Driver, index: number) => {
-    if (checkLockedAndCancel(race.lockedAt)) return;
-
-    const existingDriver = selectedDrivers[index];
-    let newAvailableDrivers = availableDrivers.filter((d) => d.id !== driver.id);
-    if (existingDriver) {
-      newAvailableDrivers = [...newAvailableDrivers, existingDriver];
-    }
-    const newDrivers = [...selectedDrivers];
-    newDrivers[index] = driver;
-    setSelectedDrivers(newDrivers);
-    setAvailableDrivers(newAvailableDrivers);
-  };
-
-  // deselect driver, add back to available drivers and set selected driver to null
-  const deselectDriver = (index: number) => () => {
-    if (checkLockedAndCancel(race.lockedAt)) return;
-
-    const driver = selectedDrivers[index];
-    if (driver) {
-      const newDrivers = [...selectedDrivers];
-      newDrivers[index] = null;
-      setSelectedDrivers(newDrivers);
-      setAvailableDrivers([...availableDrivers, driver]);
-    }
-  };
-
-  const onSubmit = async (_: any, formData: FormData) => {
-    if (checkLockedAndCancel(race.lockedAt)) return;
-
-    if (prediction) {
-      await updatePredictionAction({
-        id: prediction.id,
-        raceId: prediction.race.id,
-        pos1DriverId: selectedDrivers[0] ? selectedDrivers[0].id : null,
-        pos2DriverId: selectedDrivers[1] ? selectedDrivers[1].id : null,
-        pos3DriverId: selectedDrivers[2] ? selectedDrivers[2].id : null,
-        pos4DriverId: selectedDrivers[3] ? selectedDrivers[3].id : null,
-        pos5DriverId: selectedDrivers[4] ? selectedDrivers[4].id : null,
-      });
-      setEditing(false);
-    } else {
-      await createPredictionAction({
-        raceId: race.id,
-        pos1DriverId: selectedDrivers[0] ? selectedDrivers[0].id : null,
-        pos2DriverId: selectedDrivers[1] ? selectedDrivers[1].id : null,
-        pos3DriverId: selectedDrivers[2] ? selectedDrivers[2].id : null,
-        pos4DriverId: selectedDrivers[3] ? selectedDrivers[3].id : null,
-        pos5DriverId: selectedDrivers[4] ? selectedDrivers[4].id : null,
-      });
-    }
-    return;
-  };
-
-  const handleEdit = () => {
-    if (checkLocked(race.lockedAt)) return;
-    setEditing(true);
-  };
-
-  const handleCancel = () => {
-    setSelectedDrivers(initialSelected);
-    setAvailableDrivers(initialDrivers);
-    setEditing(false);
-  };
-
-  const [state, formAction] = useActionState(onSubmit, initialState);
-
+  const [slots, setSlots] = useState<Slots>(initialSlots);
+  const [editing, setEditing] = useState(!prediction);
+  const [activeSlot, setActiveSlot] = useState<number | null>(prediction ? null : 0);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  // Only move focus into a slot's search after the user has interacted, so the page doesn't jump on load
+  const [focusSlotSearch, setFocusSlotSearch] = useState(false);
 
-  const handleDrop = (event: DragEndEvent) => {
-    if (checkLockedAndCancel(race.lockedAt)) return;
+  const raceLocked = isLocked(race.lockedAt);
+  const editable = editing && !raceLocked;
+  const hasChanges = slots.some((driver, index) => driver?.id !== initialSlots[index]?.id);
+  const hasAnyDriver = slots.some((driver) => driver !== null);
+  const availableDrivers = drivers.filter((driver) => !slots.some((d) => d?.id === driver.id));
 
-    const { over, active } = event;
-    if (!over) return;
-    const index = over.id as number;
-    const draggedIndex = active.id as number;
-    if (draggedIndex === null || draggedIndex === index) return;
+  const resetForm = () => {
+    setSlots(initialSlots);
+    setEditing(!prediction);
+    setActiveSlot(prediction ? null : 0);
+    setFocusSlotSearch(false);
+  };
 
-    // Reorder array
-    const updatedItems = [...selectedDrivers];
-    const currentItem = updatedItems[index];
-    const draggedItem = updatedItems[draggedIndex];
-    updatedItems[index] = draggedItem;
-    updatedItems[draggedIndex] = currentItem;
+  // Predictions can lock while the page is open, so every mutation re-checks the clock
+  const ensureUnlocked = () => {
+    if (!isLocked(race.lockedAt)) return true;
+    toast.error(LOCKED_MESSAGE);
+    resetForm();
+    return false;
+  };
 
-    setSelectedDrivers(updatedItems);
+  const activateSlot = (slot: number | null) => {
+    setActiveSlot(slot);
+    setFocusSlotSearch(true);
+  };
+
+  // Put a driver in a slot, then move on to the next empty one
+  const assignDriver = (driver: Driver, slot: number) => {
+    if (!ensureUnlocked()) return;
+    const next = [...slots];
+    next[slot] = driver;
+    setSlots(next);
+    activateSlot(nextEmptySlot(next, slot));
+  };
+
+  const clearAll = () => {
+    if (!ensureUnlocked()) return;
+    setSlots(Array(SLOT_COUNT).fill(null));
+    activateSlot(0);
+  };
+
+  const clearSlot = (slot: number) => {
+    if (!ensureUnlocked()) return;
+    const next = [...slots];
+    next[slot] = null;
+    setSlots(next);
+    activateSlot(slot);
+  };
+
+  const handleDragStart = (event: DragStartEvent) => setDraggedIndex(event.active.id as number);
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    setDraggedIndex(null);
+    if (!over || active.id === over.id || !ensureUnlocked()) return;
+    const from = active.id as number;
+    const to = over.id as number;
+    const next = [...slots];
+    [next[from], next[to]] = [next[to], next[from]];
+    setSlots(next);
   };
 
   const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 300,
-        tolerance: 8,
-      },
-    })
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 300, tolerance: 8 } })
   );
 
-  const formatedDistance = formatDistance(race.lockedAt || new Date(), new Date(), {
-    includeSeconds: true,
-  });
+  const onSubmit = async () => {
+    if (!ensureUnlocked()) return;
+    const [pos1DriverId, pos2DriverId, pos3DriverId, pos4DriverId, pos5DriverId] = slots.map((d) => d?.id ?? null);
+    const driverIds = { pos1DriverId, pos2DriverId, pos3DriverId, pos4DriverId, pos5DriverId };
+
+    const error = prediction
+      ? await updatePredictionAction({ id: prediction.id, raceId: race.id, ...driverIds })
+      : await createPredictionAction({ raceId: race.id, ...driverIds });
+
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    toast.success(prediction ? "Prediction updated" : "Prediction saved");
+    setEditing(false);
+    setActiveSlot(null);
+  };
+
+  const [, formAction] = useActionState(onSubmit, undefined);
+
+  const startEditing = () => {
+    if (!ensureUnlocked()) return;
+    setEditing(true);
+    const firstEmpty = slots.findIndex((d) => d === null);
+    activateSlot(firstEmpty === -1 ? null : firstEmpty);
+  };
 
   return (
-    <form action={formAction} className="space-y-4">
-      {race.lockedAt ? (
-        raceLocked ? (
-          <p className="text-sm text-destructive -mb-2">Qualifying has begun and predictions are locked</p>
-        ) : (
-          <p className="text-sm text-muted-foreground -mb-2">
-            Qualifying begins{" "}
-            <strong title={format(race.lockedAt, "EEEE do LLLL p", { locale: sv })}>
-              {format(race.lockedAt, "EEEE do LLLL p")}
-            </strong>{" "}
-            and predictions will be locked in {formatedDistance}
-          </p>
-        )
-      ) : null}
-      <div className="flex items-center gap-2">
-        <div>
-          <p className="text-xl">{race.name}</p>
-          <p className="text-sm text-muted-foreground" suppressHydrationWarning>
-            <strong title={format(race.date, "EEEE do LLLL p", { locale: sv })}>
-              {format(race.date, "EEEE do LLLL p")}
-            </strong>
-          </p>
-        </div>
-        {raceLocked && <Lock size={24} />}
-        {prediction && !raceLocked && (
-          <Button className={cn({ invisible: editing })} type="button" onClick={handleEdit} variant={"secondary"}>
-            Edit
-          </Button>
-        )}
-      </div>
-      <DndContext onDragEnd={handleDrop} sensors={sensors}>
-        <div className={cn("w-fit space-y-2", { "space-y-4 sm:space-y-2 md:space-y-4 lg:space-y-2": editing })}>
-          {positions.map((position, index) => (
-            <div
-              key={index}
-              className={cn("grid", {
-                "sm:grid-cols-[auto_1fr] md:grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 items-center":
-                  editing || !prediction,
-                "grid-cols-[auto_1fr]": !editing && prediction,
-              })}
-            >
-              <div className="flex items-center gap-2">
-                <Label className="w-10 sm:w-14 text-center">{position}</Label>
-                {(prediction == null || editing) && (
-                  <SearchDriver drivers={availableDrivers} onSelect={(driver: Driver) => selectDriver(driver, index)} />
-                )}
-              </div>
-              <Droppable
-                index={index}
-                className={cn(
-                  "border h-12 sm:h-16 py-1 pr-1",
-                  { "border-dashed rounded-md border-muted-foreground": draggedIndex !== null },
-                  { "border-transparent": draggedIndex === null }
-                )}
-              >
-                {selectedDrivers[index] && (
-                  <div className="flex gap-2 items-center">
-                    {editing || !prediction ? (
-                      <Draggable index={index} className="w-full" setDraggedIndex={setDraggedIndex}>
-                        <DriverComponent driver={selectedDrivers[index]} className="w-full cursor-grab" />
-                      </Draggable>
-                    ) : (
-                      <DriverComponent driver={selectedDrivers[index]} className="w-full" />
-                    )}
-                    {(prediction == null || editing) && (
-                      <Button
-                        className={cn({ invisible: draggedIndex === index })}
-                        type="button"
-                        onClick={deselectDriver(index)}
-                        variant={"outline"}
-                        size={"icon"}
-                        tabIndex={-1}
-                      >
-                        <X size={16} />
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </Droppable>
+    <Card>
+      <RaceHeader race={race} locked={raceLocked} />
+      <CardContent className="p-4 sm:p-6">
+        <form action={formAction} className="space-y-6">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h3 className="font-semibold">Your top 5</h3>
+              <p className="text-sm text-muted-foreground">
+                {raceLocked
+                  ? prediction
+                    ? "Locked in. Good luck!"
+                    : "You didn't submit a prediction for this race."
+                  : editable
+                    ? "Search for a driver in a slot. Drag to reorder."
+                    : "You can change your prediction until qualifying starts."}
+              </p>
             </div>
-          ))}
-        </div>
-      </DndContext>
-      {raceLocked ? null : prediction ? (
-        editing && (
-          <>
-            <div className="space-x-2">
-              <FormLoadingButton disabled={!formChanged}>Update Prediction</FormLoadingButton>
-              <Button type="button" variant={"ghost"} onClick={handleCancel}>
-                Cancel
+            {prediction && !editable && !raceLocked && (
+              <Button type="button" variant="secondary" size="sm" onClick={startEditing}>
+                <Pencil /> Edit
               </Button>
+            )}
+            {editable && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground"
+                disabled={!hasAnyDriver}
+                onClick={clearAll}
+              >
+                <Eraser /> Clear
+              </Button>
+            )}
+          </div>
+
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <ol className="space-y-2">
+              {slots.map((driver, index) => (
+                <Slot
+                  key={index}
+                  index={index}
+                  driver={driver}
+                  editable={editable}
+                  active={editable && activeSlot === index}
+                  dragging={draggedIndex !== null}
+                  onActivate={() => activateSlot(index)}
+                  onClear={() => clearSlot(index)}
+                  search={
+                    <SearchDriver
+                      drivers={availableDrivers}
+                      onSelect={(selected) => assignDriver(selected, index)}
+                      autoFocus={focusSlotSearch}
+                    />
+                  }
+                />
+              ))}
+            </ol>
+            {/* The dragged driver floats above the list while its slot keeps a faded copy */}
+            <DragOverlay dropAnimation={null}>
+              {draggedIndex !== null && slots[draggedIndex] && (
+                <DriverRow
+                  driver={slots[draggedIndex]}
+                  className="cursor-grabbing bg-card px-2 py-1 shadow-lg ring-1 ring-primary"
+                />
+              )}
+            </DragOverlay>
+          </DndContext>
+
+          {editable && (
+            <div className="flex flex-wrap items-center gap-2 border-t pt-4">
+              <FormLoadingButton disabled={prediction ? !hasChanges : !hasAnyDriver}>
+                {prediction ? "Update prediction" : "Save prediction"}
+              </FormLoadingButton>
+              {prediction && (
+                <Button type="button" variant="ghost" onClick={resetForm}>
+                  Cancel
+                </Button>
+              )}
             </div>
-            {!formChanged && <p className="text-sm text-muted-foreground">Make some changes to be able to update</p>}
-          </>
-        )
-      ) : (
-        // disabled if no drivers selected
-        <FormLoadingButton disabled={!selectedDrivers.some((d) => d != null)}>Create Prediction</FormLoadingButton>
-      )}
-    </form>
+          )}
+        </form>
+      </CardContent>
+    </Card>
   );
 }
 
-interface DraggableProps extends React.HTMLAttributes<HTMLDivElement> {
-  index: number;
-  setDraggedIndex: (index: number | null) => void;
-}
-const Draggable = ({ children, index, setDraggedIndex, ...props }: DraggableProps) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: index,
-  });
-  useEffect(() => {
-    setDraggedIndex(isDragging ? index : null);
-  }, [isDragging]);
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        zIndex: isDragging ? 1 : undefined,
-      }
-    : undefined;
-  return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes} {...props}>
-      {children}
+const RaceHeader = ({ race, locked }: { race: Race; locked: boolean }) => (
+  <CardHeader className="relative rounded-t-lg border-b bg-muted/40 p-4 sm:p-6">
+    <div className="flex items-start justify-between gap-4">
+      <div className="min-w-0 space-y-2">
+        <p className="text-xs uppercase tracking-wider text-muted-foreground">Next race · {race.season}</p>
+        <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">{race.name}</h2>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin className="h-4 w-4" />
+            {race.city}, {race.country}
+          </span>
+          <span className="inline-flex items-center gap-1.5" suppressHydrationWarning>
+            <CalendarDays className="h-4 w-4" />
+            {format(race.date, "EEE d MMM, HH:mm")}
+          </span>
+        </div>
+        <LockStatus lockedAt={race.lockedAt} locked={locked} />
+      </div>
+      {race.circuitImg && (
+        <img
+          src={race.circuitImg}
+          alt={`${race.circuit} layout`}
+          className="hidden h-24 w-auto shrink-0 opacity-80 dark:invert sm:block"
+        />
+      )}
     </div>
+  </CardHeader>
+);
+
+const LockStatus = ({ lockedAt, locked }: { lockedAt: Date | null; locked: boolean }) => {
+  if (!lockedAt) return null;
+  if (locked) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive/15 px-2.5 py-1 text-xs font-medium text-destructive dark:text-red-400">
+        <Lock className="h-3.5 w-3.5" /> {LOCKED_MESSAGE}
+      </span>
+    );
+  }
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+      title={format(lockedAt, "EEEE d MMMM, HH:mm")}
+      suppressHydrationWarning
+    >
+      <Timer className="h-3.5 w-3.5" />
+      Open · locks in {formatDistanceToNow(lockedAt)} ({format(lockedAt, "EEE d MMM, HH:mm")})
+    </span>
   );
 };
 
-interface DroppableProps extends React.HTMLAttributes<HTMLDivElement> {
+interface SlotProps {
   index: number;
+  driver: Driver | null;
+  editable: boolean;
+  active: boolean;
+  dragging: boolean;
+  onActivate: () => void;
+  onClear: () => void;
+  search: ReactNode;
 }
-export function Droppable({ index, className, ...props }: DroppableProps) {
-  const { isOver, setNodeRef } = useDroppable({
-    id: index,
-  });
+
+const Slot = ({ index, driver, editable, active, dragging, onActivate, onClear, search }: SlotProps) => {
+  const { isOver, setNodeRef: setDropRef } = useDroppable({ id: index, disabled: !editable });
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setDragRef,
+    isDragging,
+  } = useDraggable({ id: index, disabled: !editable || !driver });
+
+  // Only empty slots are picked by searching; filled ones are cleared with X or reordered by dragging
+  const searching = active && !driver;
 
   return (
-    <div ref={setNodeRef} {...props} className={cn(className, { "border-primary": isOver })}>
-      {props.children}
-    </div>
+    <li
+      ref={setDropRef}
+      onClick={editable && !driver && !active ? onActivate : undefined}
+      className={cn("flex items-center gap-3 rounded-lg border p-2 transition-colors", {
+        "cursor-pointer hover:border-foreground/30": editable && !driver && !active && !dragging,
+        "border-primary ring-1 ring-primary": searching && !dragging,
+        "border-dashed": (editable && !driver) || dragging,
+        "border-muted-foreground": dragging,
+        "border-primary bg-accent": dragging && isOver,
+      })}
+    >
+      <PositionBadge index={index} />
+      {driver ? (
+        editable ? (
+          <DriverRow
+            ref={setDragRef}
+            {...listeners}
+            {...attributes}
+            tabIndex={-1}
+            driver={driver}
+            className={cn("cursor-grab touch-none active:cursor-grabbing", { "opacity-40": isDragging })}
+          />
+        ) : (
+          <DriverRow driver={driver} />
+        )
+      ) : searching ? (
+        <div className="min-w-0 flex-1">{search}</div>
+      ) : (
+        <button
+          type="button"
+          disabled={!editable}
+          onClick={onActivate}
+          className="flex h-10 flex-1 items-center text-left text-sm text-muted-foreground focus-visible:outline-none"
+        >
+          {editable ? "Empty. Tap to search for a driver" : "No driver picked"}
+        </button>
+      )}
+      {editable && driver && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className={cn("h-8 w-8 shrink-0", { invisible: isDragging })}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClear();
+          }}
+          aria-label={`Remove ${driver.name} from P${index + 1}`}
+        >
+          <X />
+        </Button>
+      )}
+    </li>
   );
+};
+
+interface DriverRowProps extends HTMLAttributes<HTMLDivElement> {
+  driver: Driver;
+  ref?: Ref<HTMLDivElement>;
 }
+
+const DriverRow = ({ driver, className, ...props }: DriverRowProps) => (
+  <div className={cn("flex min-w-0 flex-1 items-center gap-3 rounded-md", className)} {...props}>
+    <DriverAvatar image={driver.image} name={driver.name} />
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-sm sm:text-base">{driver.name}</p>
+      <p className="truncate text-xs text-muted-foreground sm:text-sm">{driver.team}</p>
+    </div>
+  </div>
+);
