@@ -152,13 +152,20 @@ const Classification = ({ results, winnerTime }: { results: RaceResultsWithDrive
                 />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{result.driver?.name ?? "Unknown driver"}</p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {result.driver?.team}
-                    <span className="sm:hidden">
-                      {result.grid && ` · Grid ${result.grid}`}
-                      {result.laps !== null && ` · ${result.laps} laps`}
-                    </span>
-                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{result.driver?.team}</p>
+                  {/* On mobile grid and laps get their own line instead of columns */}
+                  {(result.grid || result.laps !== null) && (
+                    <p className="flex items-center gap-1 whitespace-nowrap text-xs text-muted-foreground sm:hidden">
+                      {result.grid && (
+                        <>
+                          Grid {result.grid}
+                          <GridDelta grid={result.grid} position={result.position} />
+                        </>
+                      )}
+                      {result.grid && result.laps !== null && " · "}
+                      {result.laps !== null && `${result.laps} laps`}
+                    </p>
+                  )}
                 </div>
               </div>
               {hasGrid && (
@@ -203,7 +210,7 @@ const ResultTime = ({
   return (
     <span className="inline-flex flex-col items-end leading-tight">
       <span>{gap}</span>
-      {showTotal && <span className="text-xs text-muted-foreground">{time}</span>}
+      {showTotal && <span className="hidden text-xs text-muted-foreground sm:inline">{time}</span>}
     </span>
   );
 };
