@@ -15,7 +15,15 @@ export interface SidebarLink {
   href: string;
   icon: LucideIcon;
   onlyFor?: string;
+  shortTitle?: string;
 }
+
+export const isLinkActive = (link: SidebarLink, fullPathname: string) => {
+  const specialCases = ["/drivers", "/results-explorer"];
+  const specialCase = specialCases.find((c) => link.href.startsWith(c));
+  if (specialCase) return fullPathname.startsWith(specialCase);
+  return "/" + fullPathname.split("/")[1] === link.href;
+};
 
 const SidebarItems = () => {
   const { data: session } = useSession();
@@ -44,7 +52,6 @@ const SidebarLinkGroup = ({
   session?: Session | null;
 }) => {
   const fullPathname = usePathname();
-  const pathname = "/" + fullPathname.split("/")[1];
 
   return (
     <div className={border ? "border-border border-t my-8 pt-4" : ""}>
@@ -53,17 +60,9 @@ const SidebarLinkGroup = ({
         {links.map((link) => {
           const isAllowed = link.onlyFor ? session?.user?.email === link.onlyFor : true;
           if (!isAllowed) return null;
-          let active = pathname === link.href;
-
-          const specialCases = ["/drivers", "/results-explorer"];
-          const specialCase = specialCases.find((c) => link.href.startsWith(c));
-          if (specialCase) {
-            active = fullPathname.startsWith(specialCase);
-          }
-
           return (
             <li key={link.title}>
-              <SidebarLink link={link} active={active} />
+              <SidebarLink link={link} active={isLinkActive(link, fullPathname)} />
             </li>
           );
         })}

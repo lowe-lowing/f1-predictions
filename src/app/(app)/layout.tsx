@@ -14,9 +14,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <NextAuthProvider>
         <RouteHistoryProvider>
           <TooltipProvider>
-            <div className="flex h-screen">
+            <div className="flex h-dvh">
               <Sidebar />
-              <main className="flex-1 md:p-8 pt-2 p-4 overflow-y-auto">
+              <main className="flex-1 md:p-8 pt-0 p-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] overflow-y-auto">
                 <Navbar />
                 {children}
               </main>
