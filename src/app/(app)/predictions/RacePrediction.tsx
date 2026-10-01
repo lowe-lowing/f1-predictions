@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { PredictionFull } from "@/lib/api/predictions/queries";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { type FC } from "react";
 import { DriverAvatar, MAX_POINTS_PER_RACE, PointsMarker, PositionBadge } from "./positions";
@@ -39,27 +40,37 @@ const RacePrediction: FC<RacePredictionProps> = ({ prediction }) => {
           <p className="text-xs text-muted-foreground">of {MAX_POINTS_PER_RACE} pts</p>
         </div>
       </div>
-      <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-muted">
-        <div className="h-full rounded-full bg-primary" style={{ width: `${(points / MAX_POINTS_PER_RACE) * 100}%` }} />
-      </div>
-      <ol className="space-y-1.5">
-        {drivers.map((driver, index) => (
-          <li key={index} className="flex items-center gap-2.5">
-            <PositionBadge index={index} className="h-6 w-8 text-xs" />
-            {driver ? (
-              <>
-                <DriverAvatar image={driver.image} name={driver.name} className="h-7 w-7" />
-                <span className="min-w-0 flex-1 truncate text-sm">{driver.name}</span>
-                <PointsMarker points={driver.points} />
-              </>
-            ) : (
-              <span className="flex-1 text-sm text-muted-foreground">No pick</span>
-            )}
-          </li>
-        ))}
-      </ol>
+      <PointsBar points={points} className="mb-4" />
+      <PicksList drivers={drivers} />
     </Card>
   );
 };
+
+type PickedDriver = { name: string | null; image: string | null; points: number } | null;
+
+export const PointsBar = ({ points, className }: { points: number; className?: string }) => (
+  <div className={cn("h-1.5 overflow-hidden rounded-full bg-muted", className)}>
+    <div className="h-full rounded-full bg-primary" style={{ width: `${(points / MAX_POINTS_PER_RACE) * 100}%` }} />
+  </div>
+);
+
+export const PicksList = ({ drivers, showPoints = true }: { drivers: PickedDriver[]; showPoints?: boolean }) => (
+  <ol className="space-y-1.5">
+    {drivers.map((driver, index) => (
+      <li key={index} className="flex items-center gap-2.5">
+        <PositionBadge index={index} className="h-6 w-8 text-xs" />
+        {driver?.name ? (
+          <>
+            <DriverAvatar image={driver.image} name={driver.name} className="h-7 w-7" />
+            <span className="min-w-0 flex-1 truncate text-sm">{driver.name}</span>
+            {showPoints && <PointsMarker points={driver.points} />}
+          </>
+        ) : (
+          <span className="flex-1 text-sm text-muted-foreground">No pick</span>
+        )}
+      </li>
+    ))}
+  </ol>
+);
 
 export default RacePrediction;

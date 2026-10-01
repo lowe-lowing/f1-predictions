@@ -16,17 +16,18 @@ const positionStyles = [
 interface PositionBadgeProps {
   index: number;
   className?: string;
+  children?: React.ReactNode;
 }
 
-export const PositionBadge: FC<PositionBadgeProps> = ({ index, className }) => (
+export const PositionBadge: FC<PositionBadgeProps> = ({ index, className, children }) => (
   <span
     className={cn(
       "inline-flex h-7 w-9 shrink-0 items-center justify-center rounded-md text-sm font-semibold tabular-nums",
-      positionStyles[index],
+      positionStyles[Math.min(index, positionStyles.length - 1)],
       className
     )}
   >
-    P{index + 1}
+    {children ?? `P${index + 1}`}
   </span>
 );
 
