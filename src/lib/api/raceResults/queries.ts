@@ -1,5 +1,5 @@
 import { db } from "@/lib/db/index";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { type RaceResultId, raceResultIdSchema, raceResults } from "@/lib/db/schema/raceResults";
 import { races } from "@/lib/db/schema/races";
 import { drivers } from "@/lib/db/schema/drivers";
@@ -38,4 +38,14 @@ export const getRaceResultsByRaceId = async (raceId: string) => {
     .orderBy(raceResults.position);
   const r = rows.map((r) => ({ ...r.raceResult, driver: r.driver }));
   return { raceResults: r };
+};
+
+export const getRaceWinnersBySeason = async (season: number) => {
+  const rows = await db
+    .select({ raceId: raceResults.raceId, driver: drivers })
+    .from(raceResults)
+    .innerJoin(races, eq(raceResults.raceId, races.id))
+    .innerJoin(drivers, eq(raceResults.driverId, drivers.id))
+    .where(and(eq(races.season, season), eq(raceResults.position, 1)));
+  return { winners: rows };
 };
